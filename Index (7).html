@@ -1,0 +1,3393 @@
+<!DOCTYPE html>
+<html lang="uk"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Інтерактивна лабораторія теорії ймовірностей та математичної статистики</title>
+  <style>
+    /* =====================================================================
+       DESIGN TOKENS & RESET (100% Offline, Modern Dark Slate / Indigo UI)
+       ===================================================================== */
+    :root {
+      --bg-base: #060a14;
+      --bg-surface: #0e1628;
+      --bg-elevated: #141f38;
+      --bg-input: #0b1222;
+      --border-subtle: rgba(148, 163, 184, 0.14);
+      --border-strong: rgba(148, 163, 184, 0.28);
+
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+
+      --cyan: #22d3ee;
+      --cyan-soft: rgba(34, 211, 238, 0.14);
+      --indigo: #818cf8;
+      --indigo-soft: rgba(129, 140, 248, 0.16);
+      --emerald: #10b981;
+      --emerald-soft: rgba(16, 185, 129, 0.15);
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.15);
+      --rose: #f43f5e;
+      --rose-soft: rgba(244, 63, 94, 0.15);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-card: 0 12px 32px rgba(2, 6, 23, 0.45);
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+      background-color: var(--bg-base);
+      background-image:
+        radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.08), transparent 42%),
+        radial-gradient(circle at 88% 8%, rgba(99, 102, 241, 0.10), transparent 44%);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* =====================================================================
+       HEADER & NAVIGATION
+       ===================================================================== */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(6, 10, 20, 0.86);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .header-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(129, 140, 248, 0.25));
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.15);
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text-primary);
+      line-height: 1.25;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tab-group {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-surface);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    @media (min-width: 900px) {
+      .tab-group {
+        width: auto;
+      }
+    }
+
+    .tab-btn {
+      flex: 1 1 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 40px;
+      text-align: center;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+      background: rgba(148, 163, 184, 0.08);
+    }
+
+    .tab-btn.active {
+      color: var(--text-primary);
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(129, 140, 248, 0.2));
+      border-color: rgba(34, 211, 238, 0.35);
+      box-shadow: 0 4px 14px rgba(34, 211, 238, 0.12);
+    }
+
+    .tab-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(148, 163, 184, 0.14);
+      color: var(--text-secondary);
+    }
+
+    .tab-btn.active .tab-num {
+      background: var(--cyan);
+      color: #04101b;
+    }
+
+    /* =====================================================================
+       BUTTONS, INPUTS, SLIDERS, CHECKBOXES
+       ===================================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 13px;
+      min-height: 38px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .btn:hover {
+      border-color: rgba(148, 163, 184, 0.5);
+      background: #1c2a4a;
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0891b2, #4f46e5);
+      border-color: rgba(34, 211, 238, 0.45);
+      color: #ffffff;
+      box-shadow: 0 4px 16px rgba(8, 145, 178, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #06b6d4, #6366f1);
+      border-color: rgba(34, 211, 238, 0.7);
+    }
+
+    .btn-emerald {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: rgba(16, 185, 129, 0.45);
+      color: #6ee7b7;
+    }
+
+    .btn-emerald:hover {
+      background: rgba(16, 185, 129, 0.28);
+      border-color: var(--emerald);
+    }
+
+    .btn-amber {
+      background: rgba(245, 158, 11, 0.16);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #fcd34d;
+    }
+
+    .btn-amber:hover {
+      background: rgba(245, 158, 11, 0.26);
+      border-color: var(--amber);
+    }
+
+    .btn-rose {
+      background: rgba(244, 63, 94, 0.14);
+      border-color: rgba(244, 63, 94, 0.4);
+      color: #fda4af;
+    }
+
+    .btn-rose:hover {
+      background: rgba(244, 63, 94, 0.24);
+      border-color: var(--rose);
+    }
+
+    .btn-export {
+      background: rgba(34, 211, 238, 0.12);
+      border-color: rgba(34, 211, 238, 0.4);
+      color: var(--cyan);
+    }
+
+    .btn-export:hover {
+      background: rgba(34, 211, 238, 0.22);
+      border-color: var(--cyan);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn-row .btn {
+      flex: 1 1 auto;
+    }
+
+    /* Sliders */
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12.5px;
+    }
+
+    .control-label {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .control-value {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: var(--cyan);
+      background: var(--cyan-soft);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: #1e293b;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--cyan);
+      border: 2px solid #060a14;
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.55);
+      cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--cyan);
+      border: 2px solid #060a14;
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.55);
+      cursor: pointer;
+    }
+
+    .checkbox-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      user-select: none;
+      font-size: 12.5px;
+      color: var(--text-primary);
+      transition: border-color 0.15s ease;
+    }
+
+    .checkbox-item:hover {
+      border-color: var(--border-strong);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--cyan);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .dot-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* =====================================================================
+       MAIN LAYOUT & CARDS
+       ===================================================================== */
+    .app-main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 18px 20px 36px;
+    }
+
+    .module-section {
+      display: none;
+      animation: fadeIn 0.22s ease;
+    }
+
+    .module-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    @media (min-width: 1024px) {
+      .lab-grid {
+        grid-template-columns: minmax(0, 1.85fr) minmax(340px, 1fr);
+      }
+    }
+
+    .card {
+      background: rgba(14, 22, 40, 0.9);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .card-body {
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .sidebar-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* =====================================================================
+       CANVAS CONTAINERS
+       ===================================================================== */
+    .canvas-stage {
+      position: relative;
+      width: 100%;
+      background: #080e1c;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+    }
+
+    .canvas-stage canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .stage-galton {
+      height: 540px;
+    }
+
+    @media (min-width: 1024px) {
+      .stage-galton {
+        height: 620px;
+      }
+    }
+
+    .dual-canvas-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 720px) {
+      .dual-canvas-grid {
+        grid-template-columns: 1fr 1.15fr;
+      }
+    }
+
+    .stage-square {
+      aspect-ratio: 1 / 1;
+      max-height: 460px;
+      width: 100%;
+    }
+
+    .stage-chart {
+      min-height: 320px;
+      height: 100%;
+      max-height: 460px;
+    }
+
+    .stage-ols {
+      height: 480px;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    @media (min-width: 1024px) {
+      .stage-ols {
+        height: 560px;
+      }
+    }
+
+    .canvas-hint {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      padding: 10px 14px;
+      background: var(--bg-input);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* =====================================================================
+       ANALYTICS, TABLES, BADGES & FORMULAS
+       ===================================================================== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .kpi-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 11px 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .kpi-box.full {
+      grid-column: 1 / -1;
+    }
+
+    .kpi-label {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .kpi-val {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .kpi-val.cyan { color: var(--cyan); }
+    .kpi-val.emerald { color: var(--emerald); }
+    .kpi-val.amber { color: var(--amber); }
+    .kpi-val.rose { color: var(--rose); }
+    .kpi-val.indigo { color: var(--indigo); }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      background: var(--bg-input);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .stat-table th, .stat-table td {
+      padding: 8px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .stat-table th {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      background: rgba(30, 41, 59, 0.45);
+      font-weight: 700;
+    }
+
+    .stat-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .stat-table td.num {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.35;
+      border: 1px solid transparent;
+    }
+
+    .badge-emerald {
+      background: var(--emerald-soft);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+    }
+
+    .badge-amber {
+      background: var(--amber-soft);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #fcd34d;
+    }
+
+    .badge-rose {
+      background: var(--rose-soft);
+      border-color: rgba(244, 63, 94, 0.45);
+      color: #fda4af;
+    }
+
+    .badge-cyan {
+      background: var(--cyan-soft);
+      border-color: rgba(34, 211, 238, 0.4);
+      color: #67e8f9;
+    }
+
+    .badge-indigo {
+      background: var(--indigo-soft);
+      border-color: rgba(129, 140, 248, 0.4);
+      color: #c7d2fe;
+    }
+
+    .formula-box {
+      background: rgba(11, 18, 34, 0.92);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--indigo);
+      border-radius: var(--radius-sm);
+      padding: 11px 13px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .formula-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--indigo);
+    }
+
+    .formula-line {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #e2e8f0;
+      word-break: break-word;
+    }
+
+    .legend-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .manual-panel {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px;
+      background: rgba(245, 158, 11, 0.07);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: var(--radius-md);
+    }
+
+    .manual-panel.visible {
+      display: flex;
+    }
+
+    .equation-banner {
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(129, 140, 248, 0.12));
+      border: 1px solid rgba(34, 211, 238, 0.32);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      text-align: center;
+    }
+
+    .equation-main {
+      font-family: var(--font-mono);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--cyan);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .preset-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .preset-grid .btn {
+      font-size: 12px;
+      padding: 6px 10px;
+      min-height: 34px;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 100;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      background: #0f172a;
+      border: 1px solid rgba(34, 211, 238, 0.5);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border-subtle);
+      width: 100%;
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =====================================================================
+       APPLICATION HEADER
+       ===================================================================== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-top">
+        <div class="brand">
+          <div class="brand-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 20h18"></path>
+              <path d="M4 19c3.5 0 4.5-13 8-13s4.5 13 8 13"></path>
+              <circle cx="12" cy="6" r="1.5" fill="#818cf8" stroke="none"></circle>
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">Інтерактивна лабораторія теорії ймовірностей та математичної статистики</h1>
+            <p class="brand-subtitle">Творчий проєкт з курсу «Теорія ймовірностей, ймовірнісні процеси та математична статистика»</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="btn-export-html" class="btn btn-export" type="button" title="Завантажити повний самодостатній HTML-код для здачі викладачу">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Експорт коду (.html)
+          </button>
+        </div>
+      </div>
+
+      <nav class="nav-bar" aria-label="Модулі лабораторії">
+        <div class="tab-group" role="tablist">
+          <button class="tab-btn active" role="tab" aria-selected="true" data-tab="galton" type="button">
+            <span class="tab-num">1</span>
+            Дошка Гальтона (Бернуллі → Муавр–Лаплас)
+          </button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-tab="meeting" type="button">
+            <span class="tab-num">2</span>
+            Задача про зустріч (Геометрична ймовірність і ЗВЧ)
+          </button>
+          <button class="tab-btn" role="tab" aria-selected="false" data-tab="ols" type="button">
+            <span class="tab-num">3</span>
+            Метод найменших квадратів і Лінійна регресія
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       MAIN CONTENT
+       ===================================================================== -->
+  <main class="app-main">
+
+    <!-- ===================================================================
+         MODULE 1: GALTON BOARD (BERNOULLI -> MOIVRE-LAPLACE)
+         =================================================================== -->
+    <section id="tab-galton" class="module-section active" role="tabpanel">
+      <div class="lab-grid">
+        <!-- Left: Canvas Visualization -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Фізико-ймовірнісна симуляція: Дошка Гальтона</h2>
+              <p class="card-subtitle">Послідовність n незалежних випробувань Бернуллі та збіжність до закону Муавра–Лапласа</p>
+            </div>
+            <div class="legend-bar">
+              <span class="legend-item"><span class="dot-swatch" style="background: var(--indigo);"></span>Емпірична частота</span>
+              <span class="legend-item"><span class="dot-swatch" style="background: var(--cyan);"></span>Біномний Pₙ(k)</span>
+              <span class="legend-item"><span class="dot-swatch" style="background: var(--amber);"></span>Муавр–Лаплас</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="canvas-stage stage-galton">
+              <canvas id="canvas-galton" width="1073" height="775"></canvas>
+            </div>
+            <div class="canvas-hint">
+              <span>На кожному штифті кулька незалежно відхиляється вправо (+1) з імовірністю <strong class="mono" style="color:var(--cyan);">p</strong> або вліво (0) з імовірністю <strong class="mono" style="color:var(--text-primary);">q = 1 − p</strong>.</span>
+              <span>Підсвічений контейнер — найімовірніше число <strong class="mono" style="color:var(--amber);">k₀</strong>.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Controls & Real-time Analytics -->
+        <div class="sidebar-stack">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Параметри експерименту</h3>
+              <span class="badge badge-cyan mono" id="galton-n-badge" style="padding: 3px 9px;">N = 0</span>
+            </div>
+            <div class="card-body">
+              <div class="control-group">
+                <div class="control-header">
+                  <label class="control-label" for="galton-rows">Кількість рядів штифтів (n)</label>
+                  <span class="control-value" id="galton-rows-val">12</span>
+                </div>
+                <input id="galton-rows" type="range" min="4" max="20" step="1" value="12">
+              </div>
+
+              <div class="control-group">
+                <div class="control-header">
+                  <label class="control-label" for="galton-prob">Імовірність відхилення вправо (p)</label>
+                  <span class="control-value" id="galton-prob-val">0.50</span>
+                </div>
+                <input id="galton-prob" type="range" min="0.10" max="0.90" step="0.05" value="0.50">
+              </div>
+
+              <div class="control-group">
+                <div class="control-header">
+                  <label class="control-label" for="galton-speed">Швидкість подачі кульок</label>
+                  <span class="control-value" id="galton-speed-val">Середня (14/с)</span>
+                </div>
+                <input id="galton-speed" type="range" min="1" max="5" step="1" value="3">
+              </div>
+
+              <div class="btn-row">
+                <button id="galton-toggle" class="btn btn-primary" type="button">▶ Старт</button>
+                <button id="galton-plus1" class="btn" type="button">+1 кулька</button>
+                <button id="galton-plus50" class="btn btn-emerald" type="button">+50</button>
+                <button id="galton-plus500" class="btn btn-emerald" type="button">+500 миттєво</button>
+                <button id="galton-reset" class="btn btn-rose" type="button">Скинути</button>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="checkbox-list">
+                <label class="checkbox-item">
+                  <input id="galton-show-binom" type="checkbox" checked="">
+                  <span class="dot-swatch" style="background: var(--cyan);"></span>
+                  <span>Біномний розподіл Pₙ(k) = Cₙᵏ·pᵏ·qⁿ⁻ᵏ</span>
+                </label>
+                <label class="checkbox-item">
+                  <input id="galton-show-gauss" type="checkbox" checked="">
+                  <span class="dot-swatch" style="background: var(--amber);"></span>
+                  <span>Крива локальної теореми Муавра–Лапласа</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Аналітика: Теорія vs Експеримент</h3>
+            </div>
+            <div class="card-body">
+              <div id="galton-npq-badge" class="badge badge-amber">npq = 3.00 ≤ 9: помітна похибка, спробуйте збільшити n або наблизити p до 0.5</div>
+
+              <table class="stat-table">
+                <thead>
+                  <tr>
+                    <th>Характеристика</th>
+                    <th style="text-align:right;">Теорія</th>
+                    <th style="text-align:right;">Експеримент</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Мат. сподівання <span class="mono">M(X) = np</span></td>
+                    <td class="num" id="g-th-mean">6.000</td>
+                    <td class="num" id="g-em-mean" style="color:var(--cyan);">—</td>
+                  </tr>
+                  <tr>
+                    <td>Дисперсія <span class="mono">D(X) = npq</span></td>
+                    <td class="num" id="g-th-var">3.000</td>
+                    <td class="num" id="g-em-var" style="color:var(--cyan);">—</td>
+                  </tr>
+                  <tr>
+                    <td>СКВ <span class="mono">σ(X) = √(npq)</span></td>
+                    <td class="num" id="g-th-sd">1.732</td>
+                    <td class="num" id="g-em-sd" style="color:var(--cyan);">—</td>
+                  </tr>
+                  <tr>
+                    <td>Найімовірніше число <span class="mono">k₀</span></td>
+                    <td class="num" id="g-th-mode" style="color:var(--amber);">6</td>
+                    <td class="num" id="g-em-mode" style="color:var(--amber);">—</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="formula-box">
+                <div class="formula-title">Демонстровані формули (Лекція №8, №10)</div>
+                <div class="formula-line">Pₙ(k) = Cₙᵏ · pᵏ · qⁿ⁻ᵏ, &nbsp; q = 1 − p</div>
+                <div class="formula-line">Pₙ(k) ≈ (1 / √(2πnpq)) · exp(−(k − np)² / (2npq))</div>
+                <div class="formula-line">np − q ≤ k₀ ≤ np + p</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         MODULE 2: MEETING PROBLEM (GEOMETRIC PROBABILITY & LLN)
+         =================================================================== -->
+    <section id="tab-meeting" class="module-section" role="tabpanel">
+      <div class="lab-grid">
+        <!-- Left: Synchronized Dual Canvases -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Задача про зустріч (метод Монте-Карло)</h2>
+              <p class="card-subtitle">Двоє осіб приходять незалежно у проміжку [0, T] і чекають t хв. Зустріч: |x − y| ≤ t</p>
+            </div>
+            <div class="legend-bar">
+              <span class="legend-item"><span class="dot-swatch" style="background: var(--emerald);"></span>Зустрілися (|x−y| ≤ t)</span>
+              <span class="legend-item"><span class="dot-swatch" style="background: var(--rose);"></span>Розминулися</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="dual-canvas-grid">
+              <div class="canvas-stage stage-square">
+                <canvas id="canvas-meeting-sq" width="12" height="12"></canvas>
+              </div>
+              <div class="canvas-stage stage-chart">
+                <canvas id="canvas-meeting-conv" width="12" height="12"></canvas>
+              </div>
+            </div>
+            <div class="canvas-hint">
+              <span id="meeting-last-point">Останнє випробування: ще не проведено. Натисніть «Старт» або додайте спроби.</span>
+              <span>Шестикутник <strong class="mono" style="color:var(--emerald);">OEFCKM</strong> — область сприятливих наслідків A.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Controls & Analytics -->
+        <div class="sidebar-stack">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Параметри задачі</h3>
+              <span class="badge badge-cyan mono" id="meeting-n-badge" style="padding: 3px 9px;">N = 0</span>
+            </div>
+            <div class="card-body">
+              <div class="control-group">
+                <div class="control-header">
+                  <label class="control-label" for="meet-T">Загальний інтервал часу T (хв)</label>
+                  <span class="control-value" id="meet-T-val">60 хв</span>
+                </div>
+                <input id="meet-T" type="range" min="20" max="120" step="5" value="60">
+              </div>
+
+              <div class="control-group">
+                <div class="control-header">
+                  <label class="control-label" for="meet-t">Час очікування t (хв)</label>
+                  <span class="control-value" id="meet-t-val">15 хв</span>
+                </div>
+                <input id="meet-t" type="range" min="1" max="60" step="1" value="15">
+              </div>
+
+              <div class="control-group">
+                <div class="control-header">
+                  <label class="control-label" for="meet-alpha">Коридор відхилення α (теорема Бернуллі)</label>
+                  <span class="control-value" id="meet-alpha-val">±0.030</span>
+                </div>
+                <input id="meet-alpha" type="range" min="0.01" max="0.10" step="0.005" value="0.03">
+              </div>
+
+              <div class="btn-row">
+                <button id="meet-toggle" class="btn btn-primary" type="button">▶ Старт</button>
+                <button id="meet-plus1" class="btn" type="button">+1 спроба</button>
+                <button id="meet-plus100" class="btn btn-emerald" type="button">+100</button>
+                <button id="meet-plus1000" class="btn btn-emerald" type="button">+1000</button>
+                <button id="meet-reset" class="btn btn-rose" type="button">Скинути</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Статистична оцінка та надійний інтервал</h3>
+            </div>
+            <div class="card-body">
+              <div class="kpi-grid">
+                <div class="kpi-box">
+                  <span class="kpi-label">Теоретична P(A)</span>
+                  <span class="kpi-val emerald" id="m-p-theo">0.4375</span>
+                  <span class="kpi-sub" id="m-p-theo-pct">43.75%</span>
+                </div>
+                <div class="kpi-box">
+                  <span class="kpi-label">Відносна частота wₙ = m/N</span>
+                  <span class="kpi-val cyan" id="m-w-emp">—</span>
+                  <span class="kpi-sub" id="m-counts">m = 0 із N = 0</span>
+                </div>
+                <div class="kpi-box">
+                  <span class="kpi-label">Відхилення |wₙ − P(A)|</span>
+                  <span class="kpi-val" id="m-dev">—</span>
+                  <span class="kpi-sub" id="m-dev-status">Очікування даних</span>
+                </div>
+                <div class="kpi-box">
+                  <span class="kpi-label">P(|m/N − p| ≤ α)</span>
+                  <span class="kpi-val indigo" id="m-bernoulli-prob">—</span>
+                  <span class="kpi-sub">2·Φ(α·√(N/(pq)))</span>
+                </div>
+                <div class="kpi-box full">
+                  <span class="kpi-label">95% надійний інтервал для p (формула Вілсона, t = 1.96)</span>
+                  <span class="kpi-val amber" id="m-ci-range">—</span>
+                  <span class="kpi-sub" id="m-ci-status">Проведіть випробування для побудови інтервалу</span>
+                </div>
+              </div>
+
+              <div class="formula-box">
+                <div class="formula-title">Демонстровані формули (Лекції №2, №8, №19)</div>
+                <div class="formula-line">P(A) = S(OEFCKM) / S(Ω) = t(2T − t) / T²</div>
+                <div class="formula-line">p₁,₂ = [N/(t²+N)] · [w + t²/(2N) ± t·√(w(1−w)/N + (t/(2N))²)]</div>
+                <div class="formula-line">P(|m/N − p| ≤ α) ≈ 2·Φ(α·√(N / (pq)))</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         MODULE 3: OLS & LINEAR REGRESSION
+         =================================================================== -->
+    <section id="tab-ols" class="module-section" role="tabpanel">
+      <div class="lab-grid">
+        <!-- Left: Interactive Coordinate Plane -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Лабораторія МНК та лінійної регресії</h2>
+              <p class="card-subtitle">Інтерактивна побудова прямої регресії Y на X із геометричною візуалізацією квадратів залишків</p>
+            </div>
+            <div class="legend-bar">
+              <span class="legend-item"><span class="dot-swatch" style="background: var(--cyan);"></span>Пряма МНК ŷ</span>
+              <span class="legend-item"><span class="dot-swatch" style="background: var(--rose);"></span>Квадрати (yᵢ − ŷᵢ)²</span>
+              <span class="legend-item"><span class="dot-swatch" style="background: var(--amber);"></span>Пробна пряма</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="preset-grid">
+              <button class="btn btn-primary" id="ols-preset-lecture" type="button">Приклад з лекції (Торгові агенти, n=8)</button>
+              <button class="btn" id="ols-preset-pos" type="button">Сильна позитивна</button>
+              <button class="btn" id="ols-preset-neg" type="button">Негативна кореляція</button>
+              <button class="btn" id="ols-preset-noise" type="button">Випадковий шум (r ≈ 0)</button>
+              <button class="btn btn-rose" id="ols-clear" type="button">Очистити</button>
+            </div>
+
+            <div class="canvas-stage stage-ols">
+              <canvas id="canvas-ols" width="12" height="12"></canvas>
+            </div>
+
+            <div class="canvas-hint">
+              <span><strong>Клік</strong> — додати точку · <strong>Перетягування</strong> — перемістити · <strong>ПКМ / подвійний клік</strong> — видалити точку</span>
+              <span class="mono" id="ols-cursor-coords" style="color:var(--cyan);">x: — , y: —</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Controls & Regression Analytics -->
+        <div class="sidebar-stack">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Режим візуалізації</h3>
+              <span class="badge badge-indigo mono" id="ols-n-badge" style="padding: 3px 9px;">n = 8</span>
+            </div>
+            <div class="card-body">
+              <div class="checkbox-list">
+                <label class="checkbox-item">
+                  <input id="ols-show-squares" type="checkbox" checked="">
+                  <span class="dot-swatch" style="background: var(--rose);"></span>
+                  <span>Квадрати залишків (площа = (yᵢ − ŷᵢ)²)</span>
+                </label>
+                <label class="checkbox-item">
+                  <input id="ols-show-manual" type="checkbox">
+                  <span class="dot-swatch" style="background: var(--amber);"></span>
+                  <span>Показати ручну пробну пряму (спробуйте побити МНК!)</span>
+                </label>
+              </div>
+
+              <div id="ols-manual-panel" class="manual-panel">
+                <div class="control-group">
+                  <div class="control-header">
+                    <label class="control-label" for="ols-man-slope">Нахил пробної прямої (a₁)</label>
+                    <span class="control-value" id="ols-man-slope-val" style="color:var(--amber);background:var(--amber-soft);">33.88</span>
+                  </div>
+                  <input id="ols-man-slope" type="range" min="-133.93" max="133.93" step="0.446" value="0">
+                </div>
+                <div class="control-group">
+                  <div class="control-header">
+                    <label class="control-label" for="ols-man-intercept">Зсув пробної прямої (a₀)</label>
+                    <span class="control-value" id="ols-man-intercept-val" style="color:var(--amber);background:var(--amber-soft);">-96.91</span>
+                  </div>
+                  <input id="ols-man-intercept" type="range" min="-753.0" max="988.0" step="0.47" value="0">
+                </div>
+                <div class="kpi-box" style="border-color: rgba(245, 158, 11, 0.35);">
+                  <span class="kpi-label">Порівняння суми квадратів: Φ_ручна vs Φ_min (МНК)</span>
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;">
+                    <span class="kpi-val amber" id="ols-man-phi">Φ_ручна = 815.00</span>
+                    <span class="kpi-sub" id="ols-man-diff" style="color:#fcd34d;">+197.36 гірше за МНК (+32.0%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Результати регресійного аналізу</h3>
+            </div>
+            <div class="card-body">
+              <div class="equation-banner">
+                <div class="kpi-label" style="margin-bottom:4px;">Рівняння прямої регресії Y на X</div>
+                <div class="equation-main" id="ols-eq">ŷ = 47.0588·x − 186.4706</div>
+              </div>
+
+              <div id="ols-corr-badge" class="badge badge-emerald">Сильний прямий лінійний зв'язок (|r| = 0.798)</div>
+
+              <div class="kpi-grid">
+                <div class="kpi-box">
+                  <span class="kpi-label">Коеф. кореляції Пірсона (r)</span>
+                  <span class="kpi-val cyan" id="ols-r">0.7979</span>
+                </div>
+                <div class="kpi-box">
+                  <span class="kpi-label">Детермінація (R² = r²)</span>
+                  <span class="kpi-val indigo" id="ols-r2">0.6367 (63.7%)</span>
+                </div>
+                <div class="kpi-box">
+                  <span class="kpi-label">Сума квадратів Φ_min</span>
+                  <span class="kpi-val rose" id="ols-phi">617.647</span>
+                </div>
+                <div class="kpi-box">
+                  <span class="kpi-label">Похибка σ² = Φ_min/(n−2)</span>
+                  <span class="kpi-val amber" id="ols-sigma2">102.941</span>
+                </div>
+              </div>
+
+              <table class="stat-table">
+                <thead>
+                  <tr>
+                    <th>Показник вибірки</th>
+                    <th style="text-align:right;">Значення</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Вибіркові середні <span class="mono">x̄ , ȳ</span></td>
+                    <td class="num" id="ols-means">6.513 , 120.00</td>
+                  </tr>
+                  <tr>
+                    <td>Вибіркові дисперсії <span class="mono">Sₓ² , Sᵧ²</span></td>
+                    <td class="num" id="ols-vars">0.0611 , 212.50</td>
+                  </tr>
+                  <tr>
+                    <td>Критичне <span class="mono">t(n−2, 0.95)</span></td>
+                    <td class="num" id="ols-tcrit">2.4469 (df=6)</td>
+                  </tr>
+                  <tr>
+                    <td>95% надійний інтервал для <span class="mono">α₁</span></td>
+                    <td class="num" id="ols-ci-a1" style="color:var(--cyan);">(11.55 ; 82.57)</td>
+                  </tr>
+                  <tr>
+                    <td>95% надійний інтервал для <span class="mono">α₀</span></td>
+                    <td class="num" id="ols-ci-a0" style="color:var(--indigo);">(-417.90 ; 44.96)</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="formula-box">
+                <div class="formula-title">Демонстровані формули (Лекція №19)</div>
+                <div class="formula-line">Φ(α₁, α₀) = Σ(yᵢ − α₁xᵢ − α₀)² → min</div>
+                <div class="formula-line">α₁ = r·(Sᵧ / Sₓ), &nbsp; α₀ = ȳ − α₁x̄</div>
+                <div class="formula-line">αₖ ± t(n−2, 0.95)·σ(αₖ), &nbsp; σ² = Φ_min / (n − 2)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- =====================================================================
+       APPLICATION JAVASCRIPT (Pure ES6+, Zero External Dependencies)
+       ===================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ===================================================================
+         1. MATHEMATICAL UTILITIES
+         =================================================================== */
+      const MathUtils = {
+        /**
+         * Log-factorial cache for overflow-safe combinatorial calculations.
+         */
+        _logFactCache: [0, 0],
+        logFact(n) {
+          for (let i = this._logFactCache.length; i <= n; i++) {
+            this._logFactCache[i] = this._logFactCache[i - 1] + Math.log(i);
+          }
+          return this._logFactCache[n] || 0;
+        },
+
+        /**
+         * Exact Binomial PMF P_n(k) = C_n^k * p^k * (1-p)^(n-k) computed in log space.
+         */
+        binomialPMF(n, k, p) {
+          if (k < 0 || k > n) return 0;
+          if (p <= 0) return k === 0 ? 1 : 0;
+          if (p >= 1) return k === n ? 1 : 0;
+          const logC = this.logFact(n) - this.logFact(k) - this.logFact(n - k);
+          return Math.exp(logC + k * Math.log(p) + (n - k) * Math.log(1 - p));
+        },
+
+        /**
+         * Local Moivre-Laplace normal density approximation for Binomial(n, p).
+         */
+        moivreLaplacePDF(x, n, p) {
+          const q = 1 - p;
+          const npq = n * p * q;
+          if (npq <= 1e-12) return 0;
+          const sd = Math.sqrt(npq);
+          const z = (x - n * p) / sd;
+          return (1 / (sd * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * z * z);
+        },
+
+        /**
+         * Most probable value(s) k_0 satisfying: np - q <= k_0 <= np + p.
+         */
+        binomialModes(n, p) {
+          const q = 1 - p;
+          const low = n * p - q;
+          const high = n * p + p;
+          const eps = 1e-9;
+          const modes = [];
+          for (let k = 0; k <= n; k++) {
+            if (k >= low - eps && k <= high + eps) {
+              modes.push(k);
+            }
+          }
+          return modes;
+        },
+
+        /**
+         * Error function erf(x) via Abramowitz & Stegun formula 7.1.26 (max err < 1.5e-7).
+         */
+        erf(x) {
+          const sign = x < 0 ? -1 : 1;
+          const ax = Math.abs(x);
+          const t = 1 / (1 + 0.3275911 * ax);
+          const a1 = 0.254829592;
+          const a2 = -0.284496736;
+          const a3 = 1.421413741;
+          const a4 = -1.453152027;
+          const a5 = 1.061405429;
+          const poly = ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t;
+          const y = 1 - poly * Math.exp(-ax * ax);
+          return sign * y;
+        },
+
+        /**
+         * Tabulated Laplace function Phi(x) = (1/sqrt(2pi)) * integral_0^x exp(-t^2/2) dt.
+         */
+        laplacePhi(x) {
+          return 0.5 * this.erf(x / Math.SQRT2);
+        },
+
+        /**
+         * Wilson score 95% confidence interval (Lecture 19 exact formula, t = 1.96).
+         */
+        wilsonCI(m, N, t = 1.96) {
+          if (N <= 0) return null;
+          const w = m / N;
+          const t2 = t * t;
+          const factor = N / (t2 + N);
+          const center = w + t2 / (2 * N);
+          const half = t * Math.sqrt((w * (1 - w)) / N + Math.pow(t / (2 * N), 2));
+          const p1 = Math.max(0, factor * (center - half));
+          const p2 = Math.min(1, factor * (center + half));
+          return { p1, p2 };
+        },
+
+        /**
+         * Two-tailed Student's t critical values for confidence level gamma = 0.95 (alpha = 0.05).
+         */
+        _tTable95: {
+          1: 12.7062, 2: 4.3027, 3: 3.1824, 4: 2.7764, 5: 2.5706,
+          6: 2.4469, 7: 2.3646, 8: 2.3060, 9: 2.2622, 10: 2.2281,
+          11: 2.2010, 12: 2.1788, 13: 2.1604, 14: 2.1448, 15: 2.1314,
+          16: 2.1199, 17: 2.1098, 18: 2.1009, 19: 2.0930, 20: 2.0860,
+          21: 2.0796, 22: 2.0739, 23: 2.0687, 24: 2.0639, 25: 2.0595,
+          26: 2.0555, 27: 2.0518, 28: 2.0484, 29: 2.0452, 30: 2.0423
+        },
+        studentT95(df) {
+          if (df <= 0) return NaN;
+          if (df <= 30) return this._tTable95[df];
+          return 1.96;
+        },
+
+        fmt(num, digits = 3) {
+          if (!Number.isFinite(num)) return '—';
+          return num.toFixed(digits);
+        }
+      };
+
+      /* ===================================================================
+         2. CANVAS HiDPI & DRAWING HELPERS
+         =================================================================== */
+      function resizeCanvasHiDPI(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const w = Math.max(10, Math.floor(rect.width));
+        const h = Math.max(10, Math.floor(rect.height));
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h, dpr };
+      }
+
+      function showToast(message) {
+        const el = document.getElementById('toast');
+        el.textContent = message;
+        el.classList.add('show');
+        clearTimeout(showToast._timer);
+        showToast._timer = setTimeout(() => el.classList.remove('show'), 2800);
+      }
+
+      /* ===================================================================
+         3. MODULE 1: GALTON BOARD (BERNOULLI -> MOIVRE-LAPLACE)
+         =================================================================== */
+      const GaltonModule = {
+        canvas: null,
+        ctx: null,
+        w: 600,
+        h: 560,
+
+        n: 12,
+        p: 0.50,
+        speedLevel: 3, // 1..5
+        running: false,
+        showBinom: true,
+        showGauss: true,
+
+        bins: [],
+        binFlash: [],
+        pegFlash: new Map(),
+        balls: [],
+        totalLanded: 0,
+        spawnAccum: 0,
+
+        speedConfig: {
+          1: { rate: 3, stepTime: 0.24, label: 'Повільна (3/с)' },
+          2: { rate: 7, stepTime: 0.16, label: 'Помірна (7/с)' },
+          3: { rate: 14, stepTime: 0.11, label: 'Середня (14/с)' },
+          4: { rate: 30, stepTime: 0.075, label: 'Швидка (30/с)' },
+          5: { rate: 65, stepTime: 0.05, label: 'Турбо (65/с)' }
+        },
+
+        init() {
+          this.canvas = document.getElementById('canvas-galton');
+          this.bindControls();
+          this.resetExperiment();
+          this.resize();
+        },
+
+        bindControls() {
+          const rowsSlider = document.getElementById('galton-rows');
+          const probSlider = document.getElementById('galton-prob');
+          const speedSlider = document.getElementById('galton-speed');
+          const toggleBtn = document.getElementById('galton-toggle');
+          const plus1Btn = document.getElementById('galton-plus1');
+          const plus50Btn = document.getElementById('galton-plus50');
+          const plus500Btn = document.getElementById('galton-plus500');
+          const resetBtn = document.getElementById('galton-reset');
+          const binomChk = document.getElementById('galton-show-binom');
+          const gaussChk = document.getElementById('galton-show-gauss');
+
+          rowsSlider.addEventListener('input', () => {
+            this.n = parseInt(rowsSlider.value, 10);
+            document.getElementById('galton-rows-val').textContent = String(this.n);
+            this.resetExperiment();
+          });
+
+          probSlider.addEventListener('input', () => {
+            this.p = parseFloat(probSlider.value);
+            document.getElementById('galton-prob-val').textContent = this.p.toFixed(2);
+            this.resetExperiment();
+          });
+
+          speedSlider.addEventListener('input', () => {
+            this.speedLevel = parseInt(speedSlider.value, 10);
+            document.getElementById('galton-speed-val').textContent = this.speedConfig[this.speedLevel].label;
+          });
+
+          toggleBtn.addEventListener('click', () => {
+            this.running = !this.running;
+            this.updateToggleButton();
+          });
+
+          plus1Btn.addEventListener('click', () => {
+            this.spawnBall();
+          });
+
+          plus50Btn.addEventListener('click', () => {
+            this.runInstantTrials(50);
+          });
+
+          plus500Btn.addEventListener('click', () => {
+            this.runInstantTrials(500);
+          });
+
+          resetBtn.addEventListener('click', () => {
+            this.resetExperiment();
+          });
+
+          binomChk.addEventListener('change', () => {
+            this.showBinom = binomChk.checked;
+            this.render();
+          });
+
+          gaussChk.addEventListener('change', () => {
+            this.showGauss = gaussChk.checked;
+            this.render();
+          });
+
+          document.getElementById('galton-speed-val').textContent = this.speedConfig[this.speedLevel].label;
+        },
+
+        updateToggleButton() {
+          const btn = document.getElementById('galton-toggle');
+          if (this.running) {
+            btn.textContent = '⏸ Пауза';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-amber');
+          } else {
+            btn.textContent = '▶ Старт';
+            btn.classList.remove('btn-amber');
+            btn.classList.add('btn-primary');
+          }
+        },
+
+        resetExperiment() {
+          this.bins = new Array(this.n + 1).fill(0);
+          this.binFlash = new Array(this.n + 1).fill(0);
+          this.pegFlash.clear();
+          this.balls = [];
+          this.totalLanded = 0;
+          this.spawnAccum = 0;
+          this.updateAnalytics();
+          this.render();
+        },
+
+        /**
+         * Precompute layout geometry so peg grid aligns exactly with n+1 histogram bins.
+         */
+        getLayout() {
+          const padL = 52;
+          const padR = 20;
+          const padT = 26;
+          const padB = 34;
+          const plotW = Math.max(100, this.w - padL - padR);
+          const binW = plotW / (this.n + 1);
+
+          const pegTopY = padT + 14;
+          const pegBottomY = this.h * 0.54;
+          const rowH = this.n > 1 ? (pegBottomY - pegTopY) / this.n : 30;
+
+          const histTopY = pegBottomY + 26;
+          const histBottomY = this.h - padB;
+          const histH = Math.max(80, histBottomY - histTopY);
+
+          const pegPos = (r, j) => ({
+            x: padL + ((this.n - r) * 0.5 + j + 0.5) * binW,
+            y: pegTopY + r * rowH
+          });
+
+          const binCenterX = (k) => padL + (k + 0.5) * binW;
+
+          return { padL, padR, padT, padB, plotW, binW, pegTopY, pegBottomY, rowH, histTopY, histBottomY, histH, pegPos, binCenterX };
+        },
+
+        /**
+         * Spawn one animated ball with pre-rolled independent Bernoulli steps.
+         */
+        spawnBall() {
+          if (this.balls.length > 260) {
+            // Keep smooth 60 FPS under extreme turbo mode by settling oldest ball
+            const oldest = this.balls.shift();
+            if (oldest) this.landBall(oldest.finalBin);
+          }
+          const path = [0];
+          let rightCount = 0;
+          for (let r = 0; r < this.n; r++) {
+            if (Math.random() < this.p) rightCount++;
+            path.push(rightCount);
+          }
+          this.balls.push({
+            path,
+            finalBin: rightCount,
+            row: -1, // -1: dropping from top funnel to row 0
+            u: 0,
+            trail: []
+          });
+        },
+
+        landBall(binIndex) {
+          this.bins[binIndex]++;
+          this.binFlash[binIndex] = 1.0;
+          this.totalLanded++;
+        },
+
+        runInstantTrials(count) {
+          const p = this.p;
+          const n = this.n;
+          for (let i = 0; i < count; i++) {
+            let k = 0;
+            for (let r = 0; r < n; r++) {
+              if (Math.random() < p) k++;
+            }
+            this.bins[k]++;
+            this.binFlash[k] = 1.0;
+          }
+          this.totalLanded += count;
+          // Also drop a small decorative visual burst so the user sees motion
+          const burst = Math.min(8, Math.max(3, Math.floor(count / 40)));
+          for (let b = 0; b < burst; b++) {
+            this.spawnBall();
+          }
+          this.updateAnalytics();
+          this.render();
+        },
+
+        resize() {
+          const res = resizeCanvasHiDPI(this.canvas);
+          this.ctx = res.ctx;
+          this.w = res.w;
+          this.h = res.h;
+          this.render();
+        },
+
+        update(dt) {
+          const cfg = this.speedConfig[this.speedLevel];
+          let landedAny = false;
+
+          if (this.running) {
+            this.spawnAccum += dt * cfg.rate;
+            const toSpawn = Math.min(6, Math.floor(this.spawnAccum));
+            this.spawnAccum -= toSpawn;
+            for (let i = 0; i < toSpawn; i++) {
+              this.spawnBall();
+            }
+          }
+
+          // Update active balls along parabolic arcs
+          const stepDur = cfg.stepTime;
+          for (let i = this.balls.length - 1; i >= 0; i--) {
+            const b = this.balls[i];
+            b.u += dt / stepDur;
+            while (b.u >= 1) {
+              b.u -= 1;
+              b.row++;
+              if (b.row >= 0 && b.row < this.n) {
+                const key = b.row + ':' + b.path[b.row];
+                this.pegFlash.set(key, 1.0);
+              }
+              if (b.row >= this.n) {
+                this.landBall(b.finalBin);
+                this.balls.splice(i, 1);
+                landedAny = true;
+                break;
+              }
+            }
+          }
+
+          // Decay flash animations
+          for (let k = 0; k < this.binFlash.length; k++) {
+            if (this.binFlash[k] > 0) {
+              this.binFlash[k] = Math.max(0, this.binFlash[k] - dt * 3.2);
+            }
+          }
+          for (const [key, val] of this.pegFlash.entries()) {
+            const next = val - dt * 4.5;
+            if (next <= 0) this.pegFlash.delete(key);
+            else this.pegFlash.set(key, next);
+          }
+
+          if (landedAny) {
+            this.updateAnalytics();
+          }
+          this.render();
+        },
+
+        updateAnalytics() {
+          const n = this.n;
+          const p = this.p;
+          const q = 1 - p;
+          const N = this.totalLanded;
+
+          const thMean = n * p;
+          const thVar = n * p * q;
+          const thSd = Math.sqrt(thVar);
+          const thModes = MathUtils.binomialModes(n, p);
+
+          document.getElementById('galton-n-badge').textContent = `N = ${N.toLocaleString('uk-UA')}`;
+          document.getElementById('g-th-mean').textContent = thMean.toFixed(3);
+          document.getElementById('g-th-var').textContent = thVar.toFixed(3);
+          document.getElementById('g-th-sd').textContent = thSd.toFixed(3);
+          document.getElementById('g-th-mode').textContent = thModes.join(' та ');
+
+          const npqBadge = document.getElementById('galton-npq-badge');
+          if (thVar > 9) {
+            npqBadge.className = 'badge badge-emerald';
+            npqBadge.textContent = `npq = ${thVar.toFixed(2)} > 9: добре наближення Муавра–Лапласа`;
+          } else {
+            npqBadge.className = 'badge badge-amber';
+            npqBadge.textContent = `npq = ${thVar.toFixed(2)} ≤ 9: помітна похибка, спробуйте збільшити n або наблизити p до 0.5`;
+          }
+
+          if (N === 0) {
+            document.getElementById('g-em-mean').textContent = '—';
+            document.getElementById('g-em-var').textContent = '—';
+            document.getElementById('g-em-sd').textContent = '—';
+            document.getElementById('g-em-mode').textContent = '—';
+            return;
+          }
+
+          let sum = 0;
+          let sumSq = 0;
+          let maxCount = -1;
+          for (let k = 0; k <= n; k++) {
+            const c = this.bins[k];
+            sum += k * c;
+            sumSq += k * k * c;
+            if (c > maxCount) maxCount = c;
+          }
+          const emMean = sum / N;
+          const emVar = Math.max(0, sumSq / N - emMean * emMean);
+          const emSd = Math.sqrt(emVar);
+          const emModes = [];
+          for (let k = 0; k <= n; k++) {
+            if (this.bins[k] === maxCount) emModes.push(k);
+          }
+
+          document.getElementById('g-em-mean').textContent = emMean.toFixed(3);
+          document.getElementById('g-em-var').textContent = emVar.toFixed(3);
+          document.getElementById('g-em-sd').textContent = emSd.toFixed(3);
+          document.getElementById('g-em-mode').textContent = emModes.slice(0, 3).join(', ');
+        },
+
+        render() {
+          if (!this.ctx) return;
+          const ctx = this.ctx;
+          const w = this.w;
+          const h = this.h;
+          const L = this.getLayout();
+
+          // Background
+          ctx.fillStyle = '#080e1c';
+          ctx.fillRect(0, 0, w, h);
+
+          // Subtle top funnel
+          const funnelX = L.pegPos(0, 0).x;
+          ctx.save();
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(funnelX - 18, 4);
+          ctx.lineTo(funnelX - 7, L.pegTopY - 14);
+          ctx.moveTo(funnelX + 18, 4);
+          ctx.lineTo(funnelX + 7, L.pegTopY - 14);
+          ctx.stroke();
+          ctx.restore();
+
+          // Compute theoretical distributions & dynamic Y scale
+          const binomProbs = [];
+          let maxProb = 0.08;
+          for (let k = 0; k <= this.n; k++) {
+            const bp = MathUtils.binomialPMF(this.n, k, this.p);
+            binomProbs.push(bp);
+            if (bp > maxProb) maxProb = bp;
+            if (this.totalLanded > 0) {
+              const emp = this.bins[k] / this.totalLanded;
+              if (emp > maxProb) maxProb = emp;
+            }
+          }
+          const gaussPeak = MathUtils.moivreLaplacePDF(this.n * this.p, this.n, this.p);
+          if (gaussPeak > maxProb) maxProb = gaussPeak;
+          const yScaleMax = Math.min(1.0, maxProb * 1.18);
+
+          // Draw histogram horizontal gridlines & Y-axis labels
+          ctx.save();
+          ctx.font = '11px "SFMono-Regular", Consolas, monospace';
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'middle';
+          const yTicks = 4;
+          for (let i = 0; i <= yTicks; i++) {
+            const frac = i / yTicks;
+            const py = L.histBottomY - frac * L.histH;
+            const val = frac * yScaleMax;
+
+            ctx.strokeStyle = i === 0 ? 'rgba(148, 163, 184, 0.35)' : 'rgba(148, 163, 184, 0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(L.padL, py);
+            ctx.lineTo(w - L.padR, py);
+            ctx.stroke();
+
+            ctx.fillStyle = '#64748b';
+            ctx.fillText((val * 100).toFixed(val < 0.1 ? 1 : 0) + '%', L.padL - 8, py);
+          }
+          ctx.restore();
+
+          // Draw divider between peg zone and histogram
+          const modes = new Set(MathUtils.binomialModes(this.n, this.p));
+
+          // Draw histogram bins & empirical bars
+          for (let k = 0; k <= this.n; k++) {
+            const cx = L.binCenterX(k);
+            const barGap = Math.max(2, L.binW * 0.14);
+            const barW = Math.max(4, L.binW - barGap);
+            const bx = cx - barW / 2;
+            const isMode = modes.has(k);
+
+            // Bin slot background
+            ctx.fillStyle = isMode ? 'rgba(245, 158, 11, 0.07)' : 'rgba(30, 41, 59, 0.25)';
+            ctx.fillRect(bx, L.histTopY, barW, L.histH);
+
+            // Mode highlight frame
+            if (isMode) {
+              ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
+              ctx.lineWidth = 1;
+              ctx.strokeRect(bx + 0.5, L.histTopY + 0.5, barW - 1, L.histH - 1);
+            }
+
+            // Empirical bar
+            if (this.totalLanded > 0 && this.bins[k] > 0) {
+              const freq = this.bins[k] / this.totalLanded;
+              const barH = Math.min(L.histH, (freq / yScaleMax) * L.histH);
+              const by = L.histBottomY - barH;
+              const flash = this.binFlash[k];
+
+              const grad = ctx.createLinearGradient(0, by, 0, L.histBottomY);
+              if (isMode) {
+                grad.addColorStop(0, flash > 0.1 ? '#fde68a' : '#f59e0b');
+                grad.addColorStop(1, 'rgba(245, 158, 11, 0.28)');
+              } else {
+                grad.addColorStop(0, flash > 0.1 ? '#67e8f9' : '#6366f1');
+                grad.addColorStop(1, 'rgba(99, 102, 241, 0.24)');
+              }
+
+              ctx.fillStyle = grad;
+              ctx.fillRect(bx + 1, by, Math.max(2, barW - 2), barH);
+
+              // Crisp top cap
+              ctx.fillStyle = isMode ? '#fcd34d' : (flash > 0.1 ? '#22d3ee' : '#a5b4fc');
+              ctx.fillRect(bx + 1, by, Math.max(2, barW - 2), 2);
+            }
+
+            // Bin label k
+            ctx.fillStyle = isMode ? '#fbbf24' : '#94a3b8';
+            ctx.font = (isMode ? 'bold ' : '') + (this.n > 15 ? '10px' : '11px') + ' "SFMono-Regular", Consolas, monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(String(k), cx, L.histBottomY + 7);
+            if (isMode) {
+              ctx.fillStyle = 'rgba(245, 158, 11, 0.85)';
+              ctx.font = 'bold 9.5px "SFMono-Regular", Consolas, monospace';
+              ctx.fillText('k₀', cx, L.histBottomY + 20);
+            }
+          }
+
+          // Overlay 1: Exact Binomial Distribution P_n(k)
+          if (this.showBinom) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(34, 211, 238, 0.78)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 3]);
+            ctx.beginPath();
+            for (let k = 0; k <= this.n; k++) {
+              const cx = L.binCenterX(k);
+              const py = L.histBottomY - (binomProbs[k] / yScaleMax) * L.histH;
+              if (k === 0) ctx.moveTo(cx, py);
+              else ctx.lineTo(cx, py);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            for (let k = 0; k <= this.n; k++) {
+              const cx = L.binCenterX(k);
+              const py = L.histBottomY - (binomProbs[k] / yScaleMax) * L.histH;
+              ctx.beginPath();
+              ctx.arc(cx, py, this.n > 16 ? 3 : 4, 0, Math.PI * 2);
+              ctx.fillStyle = '#080e1c';
+              ctx.fill();
+              ctx.lineWidth = 2;
+              ctx.strokeStyle = '#22d3ee';
+              ctx.stroke();
+            }
+            ctx.restore();
+          }
+
+          // Overlay 2: Smooth Local Moivre-Laplace Curve
+          if (this.showGauss) {
+            ctx.save();
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2.5;
+            ctx.shadowColor = 'rgba(245, 158, 11, 0.55)';
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            const steps = 160;
+            const xMin = -0.5;
+            const xMax = this.n + 0.5;
+            for (let i = 0; i <= steps; i++) {
+              const xVal = xMin + (i / steps) * (xMax - xMin);
+              const yVal = MathUtils.moivreLaplacePDF(xVal, this.n, this.p);
+              const px = L.padL + (xVal + 0.5) * L.binW;
+              const py = L.histBottomY - (yVal / yScaleMax) * L.histH;
+              if (i === 0) ctx.moveTo(px, py);
+              else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+            ctx.restore();
+          }
+
+          // Draw triangular peg grid
+          const pegRadius = Math.max(2.3, Math.min(4.8, L.binW * 0.13));
+          for (let r = 0; r < this.n; r++) {
+            for (let j = 0; j <= r; j++) {
+              const pos = L.pegPos(r, j);
+              const flash = this.pegFlash.get(r + ':' + j) || 0;
+
+              if (flash > 0.05) {
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, pegRadius + 4 * flash, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(34, 211, 238, ${0.35 * flash})`;
+                ctx.fill();
+              }
+
+              ctx.beginPath();
+              ctx.arc(pos.x, pos.y, pegRadius, 0, Math.PI * 2);
+              ctx.fillStyle = flash > 0.2 ? '#67e8f9' : '#475569';
+              ctx.fill();
+              ctx.strokeStyle = flash > 0.2 ? '#22d3ee' : 'rgba(148, 163, 184, 0.45)';
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+          }
+
+          // Draw falling balls with smooth parabolic trajectories & glow
+          const ballR = Math.max(3.2, Math.min(6.2, L.binW * 0.17));
+          ctx.save();
+          for (let i = 0; i < this.balls.length; i++) {
+            const b = this.balls[i];
+            let bx, by;
+            if (b.row < 0) {
+              const target = L.pegPos(0, 0);
+              const startY = 8;
+              bx = target.x;
+              by = startY + (target.y - startY) * (b.u * b.u);
+            } else {
+              const p0 = L.pegPos(b.row, b.path[b.row]);
+              const nextJ = b.path[b.row + 1];
+              const p1 = b.row + 1 < this.n
+                ? L.pegPos(b.row + 1, nextJ)
+                : { x: L.binCenterX(nextJ), y: L.histTopY + 6 };
+
+              const u = b.u;
+              bx = p0.x + (p1.x - p0.x) * u;
+              const dy = p1.y - p0.y;
+              by = p0.y + dy * (u * u) - dy * 0.26 * Math.sin(Math.PI * u);
+            }
+
+            // Soft cyan glow
+            ctx.beginPath();
+            ctx.arc(bx, by, ballR * 2.0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(34, 211, 238, 0.22)';
+            ctx.fill();
+
+            // Core sphere
+            ctx.beginPath();
+            ctx.arc(bx, by, ballR, 0, Math.PI * 2);
+            ctx.fillStyle = '#22d3ee';
+            ctx.fill();
+
+            // Specular highlight
+            ctx.beginPath();
+            ctx.arc(bx - ballR * 0.3, by - ballR * 0.3, ballR * 0.32, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+      };
+
+      /* ===================================================================
+         4. MODULE 2: MEETING PROBLEM (GEOMETRIC PROBABILITY & LLN)
+         =================================================================== */
+      const MeetingModule = {
+        sqCanvas: null,
+        sqCtx: null,
+        sqW: 400,
+        sqH: 400,
+
+        convCanvas: null,
+        convCtx: null,
+        convW: 460,
+        convH: 400,
+
+        T: 60,
+        t: 15,
+        alpha: 0.03,
+        running: false,
+        spawnAccum: 0,
+
+        totalN: 0,
+        hitsM: 0,
+        // Cap visual dots stored for instant redraw on resize while keeping exact totals
+        maxStoredPoints: 8000,
+        points: [], // { x, y, hit }
+        lastPoint: null,
+        pulsePhase: 0,
+
+        // History for convergence graph (downsampled gracefully)
+        history: [], // { n, w }
+
+        init() {
+          this.sqCanvas = document.getElementById('canvas-meeting-sq');
+          this.convCanvas = document.getElementById('canvas-meeting-conv');
+          this.bindControls();
+          this.resetExperiment();
+          this.resize();
+        },
+
+        bindControls() {
+          const sliderT = document.getElementById('meet-T');
+          const slidert = document.getElementById('meet-t');
+          const sliderA = document.getElementById('meet-alpha');
+          const btnToggle = document.getElementById('meet-toggle');
+          const btnP1 = document.getElementById('meet-plus1');
+          const btnP100 = document.getElementById('meet-plus100');
+          const btnP1000 = document.getElementById('meet-plus1000');
+          const btnReset = document.getElementById('meet-reset');
+
+          sliderT.addEventListener('input', () => {
+            this.T = parseInt(sliderT.value, 10);
+            document.getElementById('meet-T-val').textContent = `${this.T} хв`;
+            slidert.max = String(this.T);
+            if (this.t > this.T) {
+              this.t = this.T;
+              slidert.value = String(this.t);
+              document.getElementById('meet-t-val').textContent = `${this.t} хв`;
+            }
+            this.resetExperiment();
+          });
+
+          slidert.addEventListener('input', () => {
+            this.t = parseInt(slidert.value, 10);
+            document.getElementById('meet-t-val').textContent = `${this.t} хв`;
+            this.resetExperiment();
+          });
+
+          sliderA.addEventListener('input', () => {
+            this.alpha = parseFloat(sliderA.value);
+            document.getElementById('meet-alpha-val').textContent = `±${this.alpha.toFixed(3)}`;
+            this.updateAnalytics();
+            this.renderConvergence();
+          });
+
+          btnToggle.addEventListener('click', () => {
+            this.running = !this.running;
+            this.updateToggleButton();
+          });
+
+          btnP1.addEventListener('click', () => this.addTrials(1));
+          btnP100.addEventListener('click', () => this.addTrials(100));
+          btnP1000.addEventListener('click', () => this.addTrials(1000));
+          btnReset.addEventListener('click', () => this.resetExperiment());
+        },
+
+        updateToggleButton() {
+          const btn = document.getElementById('meet-toggle');
+          if (this.running) {
+            btn.textContent = '⏸ Пауза';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-amber');
+          } else {
+            btn.textContent = '▶ Старт';
+            btn.classList.remove('btn-amber');
+            btn.classList.add('btn-primary');
+          }
+        },
+
+        theoreticalP() {
+          const T = this.T;
+          const t = Math.min(this.t, T);
+          return (t * (2 * T - t)) / (T * T);
+        },
+
+        resetExperiment() {
+          this.totalN = 0;
+          this.hitsM = 0;
+          this.points = [];
+          this.lastPoint = null;
+          this.history = [];
+          this.spawnAccum = 0;
+          this.updateAnalytics();
+          this.render();
+        },
+
+        addTrials(count) {
+          const T = this.T;
+          const t = this.t;
+          // Choose smart history recording stride so huge batches still plot smoothly
+          const stride = count <= 20 ? 1 : Math.max(1, Math.floor(count / 40));
+
+          for (let i = 1; i <= count; i++) {
+            const x = Math.random() * T;
+            const y = Math.random() * T;
+            const hit = Math.abs(x - y) <= t;
+            this.totalN++;
+            if (hit) this.hitsM++;
+
+            const pt = { x, y, hit };
+            this.lastPoint = pt;
+            if (this.points.length < this.maxStoredPoints) {
+              this.points.push(pt);
+            } else {
+              // Reservoir-style replacement to maintain uniform visual density
+              const idx = Math.floor(Math.random() * this.maxStoredPoints);
+              this.points[idx] = pt;
+            }
+
+            if (i % stride === 0 || i === count || this.totalN <= 80) {
+              this.history.push({ n: this.totalN, w: this.hitsM / this.totalN });
+            }
+          }
+
+          // Compact history if it grows too large while preserving curve shape
+          if (this.history.length > 900) {
+            const compacted = [];
+            for (let i = 0; i < this.history.length; i += 2) {
+              compacted.push(this.history[i]);
+            }
+            const last = this.history[this.history.length - 1];
+            if (compacted[compacted.length - 1] !== last) compacted.push(last);
+            this.history = compacted;
+          }
+
+          this.updateAnalytics();
+          this.render();
+        },
+
+        resize() {
+          const r1 = resizeCanvasHiDPI(this.sqCanvas);
+          this.sqCtx = r1.ctx;
+          this.sqW = r1.w;
+          this.sqH = r1.h;
+
+          const r2 = resizeCanvasHiDPI(this.convCanvas);
+          this.convCtx = r2.ctx;
+          this.convW = r2.w;
+          this.convH = r2.h;
+
+          this.render();
+        },
+
+        update(dt) {
+          this.pulsePhase += dt * 4.5;
+          if (this.running) {
+            this.spawnAccum += dt * 45;
+            const batch = Math.floor(this.spawnAccum);
+            if (batch > 0) {
+              this.spawnAccum -= batch;
+              this.addTrials(Math.min(batch, 25));
+            } else if (this.lastPoint) {
+              this.renderSquare();
+            }
+          } else if (this.lastPoint) {
+            this.renderSquare();
+          }
+        },
+
+        updateAnalytics() {
+          const pTheo = this.theoreticalP();
+          const N = this.totalN;
+          const m = this.hitsM;
+
+          document.getElementById('meeting-n-badge').textContent = `N = ${N.toLocaleString('uk-UA')}`;
+          document.getElementById('m-p-theo').textContent = pTheo.toFixed(4);
+          document.getElementById('m-p-theo-pct').textContent = `${(pTheo * 100).toFixed(2)}%`;
+
+          const lastEl = document.getElementById('meeting-last-point');
+          if (this.lastPoint) {
+            const lp = this.lastPoint;
+            const statusText = lp.hit
+              ? '<strong style="color:var(--emerald);">Зустрілися</strong>'
+              : '<strong style="color:var(--rose);">Розминулися</strong>';
+            lastEl.innerHTML = `Остання спроба: <span class="mono" style="color:var(--cyan);">(${lp.x.toFixed(1)}, ${lp.y.toFixed(1)})</span> хв, |x−y| = <span class="mono">${Math.abs(lp.x - lp.y).toFixed(1)}</span> хв — ${statusText}`;
+          } else {
+            lastEl.textContent = 'Останнє випробування: ще не проведено. Натисніть «Старт» або додайте спроби.';
+          }
+
+          if (N === 0) {
+            document.getElementById('m-w-emp').textContent = '—';
+            document.getElementById('m-counts').textContent = 'm = 0 із N = 0';
+            document.getElementById('m-dev').textContent = '—';
+            document.getElementById('m-dev').className = 'kpi-val';
+            document.getElementById('m-dev-status').textContent = 'Очікування даних';
+            document.getElementById('m-bernoulli-prob').textContent = '—';
+            document.getElementById('m-ci-range').textContent = '—';
+            document.getElementById('m-ci-status').textContent = 'Проведіть випробування для побудови інтервалу';
+            return;
+          }
+
+          const w = m / N;
+          const dev = Math.abs(w - pTheo);
+          const inCorridor = dev <= this.alpha;
+
+          document.getElementById('m-w-emp').textContent = w.toFixed(4);
+          document.getElementById('m-counts').textContent = `m = ${m.toLocaleString('uk-UA')} із N = ${N.toLocaleString('uk-UA')}`;
+
+          const devEl = document.getElementById('m-dev');
+          devEl.textContent = dev.toFixed(4);
+          devEl.className = 'kpi-val ' + (inCorridor ? 'emerald' : 'rose');
+          document.getElementById('m-dev-status').textContent = inCorridor
+            ? `У межах коридору ±${this.alpha.toFixed(3)}`
+            : `Поза коридором ±${this.alpha.toFixed(3)}`;
+
+          // Theoretical probability 2 * Phi(alpha * sqrt(N / (p*q)))
+          const pq = pTheo * (1 - pTheo);
+          let bernProb;
+          if (pq <= 1e-12) {
+            bernProb = 1;
+          } else {
+            const z = this.alpha * Math.sqrt(N / pq);
+            bernProb = Math.min(1, Math.max(0, 2 * MathUtils.laplacePhi(z)));
+          }
+          document.getElementById('m-bernoulli-prob').textContent = `${(bernProb * 100).toFixed(2)}%`;
+
+          // 95% Wilson CI
+          const ci = MathUtils.wilsonCI(m, N, 1.96);
+          document.getElementById('m-ci-range').textContent = `[ ${ci.p1.toFixed(4)} ; ${ci.p2.toFixed(4)} ]`;
+          const covers = pTheo >= ci.p1 - 1e-9 && pTheo <= ci.p2 + 1e-9;
+          document.getElementById('m-ci-status').innerHTML = covers
+            ? `<span style="color:var(--emerald);">✓ Істинна P(A) = ${pTheo.toFixed(4)} потрапляє в інтервал</span>`
+            : `<span style="color:var(--rose);">✗ Істинна P(A) = ${pTheo.toFixed(4)} поза інтервалом (5% ризик)</span>`;
+        },
+
+        render() {
+          this.renderSquare();
+          this.renderConvergence();
+        },
+
+        renderSquare() {
+          if (!this.sqCtx) return;
+          const ctx = this.sqCtx;
+          const w = this.sqW;
+          const h = this.sqH;
+          const T = this.T;
+          const t = Math.min(this.t, T);
+
+          ctx.fillStyle = '#080e1c';
+          ctx.fillRect(0, 0, w, h);
+
+          const padL = 44;
+          const padB = 38;
+          const padT = 26;
+          const padR = 24;
+          const side = Math.max(60, Math.min(w - padL - padR, h - padT - padB));
+          const ox = padL + (w - padL - padR - side) / 2;
+          const oy = padT + (h - padT - padB - side) / 2 + side; // bottom-left (0,0)
+
+          const toPxX = (x) => ox + (x / T) * side;
+          const toPxY = (y) => oy - (y / T) * side;
+
+          // Draw square Omega
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+          ctx.fillRect(ox, oy - side, side, side);
+
+          // Draw favorable region A (hexagon OEFCKM)
+          ctx.save();
+          ctx.beginPath();
+          if (t >= T) {
+            ctx.rect(ox, oy - side, side, side);
+          } else {
+            ctx.moveTo(toPxX(0), toPxY(0));         // O
+            ctx.lineTo(toPxX(0), toPxY(t));         // E
+            ctx.lineTo(toPxX(T - t), toPxY(T));     // F
+            ctx.lineTo(toPxX(T), toPxY(T));         // C
+            ctx.lineTo(toPxX(T), toPxY(T - t));     // K
+            ctx.lineTo(toPxX(t), toPxY(0));         // M
+            ctx.closePath();
+          }
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.16)';
+          ctx.fill();
+
+          // Diagonal hatching inside region A
+          ctx.clip();
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.18)';
+          ctx.lineWidth = 1;
+          for (let d = -side; d <= side * 2; d += 12) {
+            ctx.beginPath();
+            ctx.moveTo(ox + d, oy);
+            ctx.lineTo(ox + d - side, oy - side);
+            ctx.stroke();
+          }
+          ctx.restore();
+
+          // Region border lines y = x + t and y = x - t
+          if (t < T) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(16, 185, 129, 0.78)';
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(toPxX(0), toPxY(t));
+            ctx.lineTo(toPxX(T - t), toPxY(T));
+            ctx.moveTo(toPxX(t), toPxY(0));
+            ctx.lineTo(toPxX(T), toPxY(T - t));
+            ctx.stroke();
+            ctx.restore();
+          }
+
+          // Square outer frame & axes
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(ox, oy - side, side, side);
+
+          // Draw sampled Monte Carlo points
+          const dotR = this.points.length > 2000 ? 1.8 : (this.points.length > 500 ? 2.2 : 2.8);
+          for (let i = 0; i < this.points.length; i++) {
+            const pt = this.points[i];
+            const px = toPxX(pt.x);
+            const py = toPxY(pt.y);
+            ctx.fillStyle = pt.hit ? 'rgba(16, 185, 129, 0.85)' : 'rgba(244, 63, 94, 0.78)';
+            ctx.fillRect(px - dotR * 0.5, py - dotR * 0.5, dotR, dotR);
+          }
+
+          // Pulsing ring + coordinate callout for last point
+          if (this.lastPoint) {
+            const lp = this.lastPoint;
+            const px = toPxX(lp.x);
+            const py = toPxY(lp.y);
+            const pulse = 5 + 4 * Math.sin(this.pulsePhase);
+            const color = lp.hit ? '#10b981' : '#f43f5e';
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(px, py, pulse, 0, Math.PI * 2);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+
+            // Label box kept cleanly inside square
+            const label = `(${lp.x.toFixed(1)}, ${lp.y.toFixed(1)})`;
+            ctx.font = 'bold 10.5px "SFMono-Regular", Consolas, monospace';
+            const tw = ctx.measureText(label).width + 10;
+            let lx = px + 9;
+            let ly = py - 20;
+            if (lx + tw > ox + side) lx = px - tw - 9;
+            if (ly < oy - side + 2) ly = py + 8;
+
+            ctx.fillStyle = 'rgba(6, 10, 20, 0.88)';
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
+            ctx.fillRect(lx, ly, tw, 17);
+            ctx.strokeRect(lx, ly, tw, 17);
+            ctx.fillStyle = '#f8fafc';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, lx + 5, ly + 8.5);
+            ctx.restore();
+          }
+
+          // Axis labels & vertices O, E, F, C, K, M
+          ctx.save();
+          ctx.font = '11px "SFMono-Regular", Consolas, monospace';
+          ctx.fillStyle = '#94a3b8';
+
+          // O, T on X and Y
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'top';
+          ctx.fillText('0', ox - 6, oy + 4);
+          ctx.textAlign = 'center';
+          ctx.fillText(String(T), ox + side, oy + 7);
+          ctx.fillStyle = '#cbd5e1';
+          ctx.fillText('x (хв)', ox + side / 2, oy + 20);
+
+          ctx.fillStyle = '#94a3b8';
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(String(T), ox - 7, oy - side);
+
+          ctx.save();
+          ctx.translate(ox - 28, oy - side / 2);
+          ctx.rotate(-Math.PI / 2);
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#cbd5e1';
+          ctx.fillText('y (хв)', 0, 0);
+          ctx.restore();
+
+          // t ticks and hexagon vertex labels
+          if (t < T) {
+            ctx.fillStyle = '#34d399';
+            ctx.font = 'bold 10.5px "SFMono-Regular", Consolas, monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText('M(t)', toPxX(t), oy + 6);
+
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('E(t)', ox - 6, toPxY(t));
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText('F', toPxX(T - t), oy - side - 5);
+
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('K', ox + side + 5, toPxY(T - t));
+
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'bottom';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('C', ox + side + 4, oy - side - 2);
+          }
+          ctx.restore();
+        },
+
+        renderConvergence() {
+          if (!this.convCtx) return;
+          const ctx = this.convCtx;
+          const w = this.convW;
+          const h = this.convH;
+          const pTheo = this.theoreticalP();
+
+          ctx.fillStyle = '#080e1c';
+          ctx.fillRect(0, 0, w, h);
+
+          const padL = 48;
+          const padR = 18;
+          const padT = 26;
+          const padB = 36;
+          const pw = Math.max(80, w - padL - padR);
+          const ph = Math.max(80, h - padT - padB);
+
+          const toY = (val) => padT + (1 - Math.max(0, Math.min(1, val))) * ph;
+
+          // Title inside chart
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'top';
+          ctx.fillText('Збіжність частоти wₙ = m/N до P(A)', padL, 7);
+
+          // Horizontal grid
+          ctx.font = '10.5px "SFMono-Regular", Consolas, monospace';
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'middle';
+          for (let i = 0; i <= 4; i++) {
+            const val = i * 0.25;
+            const py = toY(val);
+            ctx.strokeStyle = i === 0 ? 'rgba(148, 163, 184, 0.35)' : 'rgba(148, 163, 184, 0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padL, py);
+            ctx.lineTo(w - padR, py);
+            ctx.stroke();
+
+            ctx.fillStyle = '#64748b';
+            ctx.fillText(val.toFixed(2), padL - 7, py);
+          }
+
+          // Corridor P(A) +/- alpha
+          const cTop = Math.min(1, pTheo + this.alpha);
+          const cBot = Math.max(0, pTheo - this.alpha);
+          const pyTop = toY(cTop);
+          const pyBot = toY(cBot);
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.14)';
+          ctx.fillRect(padL, pyTop, pw, pyBot - pyTop);
+
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(padL, pyTop); ctx.lineTo(w - padR, pyTop);
+          ctx.moveTo(padL, pyBot); ctx.lineTo(w - padR, pyBot);
+          ctx.stroke();
+
+          // Theoretical probability dashed line
+          const pyTheo = toY(pTheo);
+          ctx.save();
+          ctx.strokeStyle = '#10b981';
+          ctx.lineWidth = 1.8;
+          ctx.setLineDash([6, 4]);
+          ctx.beginPath();
+          ctx.moveTo(padL, pyTheo);
+          ctx.lineTo(w - padR, pyTheo);
+          ctx.stroke();
+          ctx.restore();
+
+          // P(A) tag
+          ctx.fillStyle = '#34d399';
+          ctx.font = 'bold 10.5px "SFMono-Regular", Consolas, monospace';
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(`P(A)=${pTheo.toFixed(3)}`, w - padR - 4, pyTheo - 4);
+
+          // Axes frame
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(padL, padT);
+          ctx.lineTo(padL, padT + ph);
+          ctx.lineTo(padL + pw, padT + ph);
+          ctx.stroke();
+
+          // Plot history curve
+          const maxN = Math.max(10, this.totalN);
+          if (this.history.length > 0) {
+            ctx.save();
+            ctx.strokeStyle = '#22d3ee';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < this.history.length; i++) {
+              const pt = this.history[i];
+              const px = padL + (pt.n / maxN) * pw;
+              const py = toY(pt.w);
+              if (i === 0) ctx.moveTo(px, py);
+              else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+
+            // Current point highlight
+            const last = this.history[this.history.length - 1];
+            const lx = padL + (last.n / maxN) * pw;
+            const ly = toY(last.w);
+            ctx.beginPath();
+            ctx.arc(lx, ly, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#22d3ee';
+            ctx.fill();
+            ctx.strokeStyle = '#080e1c';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.restore();
+          } else {
+            ctx.fillStyle = '#64748b';
+            ctx.font = '12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Запустіть симуляцію для побудови графіка збіжності', padL + pw / 2, padT + ph / 2);
+          }
+
+          // X-axis ticks (N)
+          ctx.fillStyle = '#64748b';
+          ctx.font = '10.5px "SFMono-Regular", Consolas, monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
+          const xTicks = 4;
+          for (let i = 0; i <= xTicks; i++) {
+            const nVal = Math.round((i / xTicks) * maxN);
+            const px = padL + (i / xTicks) * pw;
+            ctx.fillText(String(nVal), px, padT + ph + 7);
+          }
+          ctx.fillStyle = '#cbd5e1';
+          ctx.fillText('Кількість випробувань N', padL + pw / 2, padT + ph + 21);
+        }
+      };
+
+      /* ===================================================================
+         5. MODULE 3: OLS & LINEAR REGRESSION
+         =================================================================== */
+      const OLSModule = {
+        canvas: null,
+        ctx: null,
+        w: 640,
+        h: 520,
+
+        points: [],
+        bounds: { xMin: 5.8, xMax: 7.2, yMin: 80, yMax: 155 },
+
+        showSquares: true,
+        showManual: false,
+        manualSlope: 35,
+        manualIntercept: -100,
+
+        dragIndex: -1,
+        hoverIndex: -1,
+        lastClickTime: 0,
+        lastClickIdx: -1,
+        stats: null,
+
+        pad: { l: 54, r: 24, t: 24, b: 40 },
+
+        init() {
+          this.canvas = document.getElementById('canvas-ols');
+          this.bindControls();
+          this.bindPointerEvents();
+          this.loadPreset('lecture');
+          this.resize();
+        },
+
+        bindControls() {
+          document.getElementById('ols-preset-lecture').addEventListener('click', () => this.loadPreset('lecture'));
+          document.getElementById('ols-preset-pos').addEventListener('click', () => this.loadPreset('pos'));
+          document.getElementById('ols-preset-neg').addEventListener('click', () => this.loadPreset('neg'));
+          document.getElementById('ols-preset-noise').addEventListener('click', () => this.loadPreset('noise'));
+          document.getElementById('ols-clear').addEventListener('click', () => this.loadPreset('clear'));
+
+          const sqChk = document.getElementById('ols-show-squares');
+          const manChk = document.getElementById('ols-show-manual');
+          const manSlope = document.getElementById('ols-man-slope');
+          const manInt = document.getElementById('ols-man-intercept');
+
+          sqChk.addEventListener('change', () => {
+            this.showSquares = sqChk.checked;
+            this.render();
+          });
+
+          manChk.addEventListener('change', () => {
+            this.showManual = manChk.checked;
+            document.getElementById('ols-manual-panel').classList.toggle('visible', this.showManual);
+            if (this.showManual) {
+              this.syncManualSlidersToDataset(true);
+            }
+            this.recompute();
+          });
+
+          manSlope.addEventListener('input', () => {
+            this.manualSlope = parseFloat(manSlope.value);
+            this.updateManualReadouts();
+            this.render();
+          });
+
+          manInt.addEventListener('input', () => {
+            this.manualIntercept = parseFloat(manInt.value);
+            this.updateManualReadouts();
+            this.render();
+          });
+        },
+
+        loadPreset(type) {
+          if (type === 'lecture') {
+            // Exact Lecture 19 Example 6 dataset (Trading agents, n=8)
+            this.bounds = { xMin: 5.8, xMax: 7.2, yMin: 80, yMax: 155 };
+            this.points = [
+              { x: 6.5, y: 105 },
+              { x: 6.5, y: 125 },
+              { x: 6.2, y: 110 },
+              { x: 6.7, y: 120 },
+              { x: 6.9, y: 140 },
+              { x: 6.5, y: 135 },
+              { x: 6.1, y: 95 },
+              { x: 6.7, y: 130 }
+            ];
+          } else if (type === 'pos') {
+            this.bounds = { xMin: 0, xMax: 10, yMin: 0, yMax: 100 };
+            this.points = [
+              { x: 1.0, y: 16 }, { x: 1.8, y: 22 }, { x: 2.5, y: 31 },
+              { x: 3.4, y: 36 }, { x: 4.2, y: 48 }, { x: 5.1, y: 53 },
+              { x: 5.9, y: 61 }, { x: 6.8, y: 66 }, { x: 7.6, y: 78 },
+              { x: 8.5, y: 83 }, { x: 9.2, y: 91 }
+            ];
+          } else if (type === 'neg') {
+            this.bounds = { xMin: 0, xMax: 10, yMin: 0, yMax: 100 };
+            this.points = [
+              { x: 0.9, y: 89 }, { x: 1.7, y: 80 }, { x: 2.6, y: 76 },
+              { x: 3.3, y: 65 }, { x: 4.4, y: 61 }, { x: 5.2, y: 50 },
+              { x: 6.0, y: 47 }, { x: 6.9, y: 35 }, { x: 7.8, y: 31 },
+              { x: 8.6, y: 20 }, { x: 9.3, y: 16 }
+            ];
+          } else if (type === 'noise') {
+            this.bounds = { xMin: 0, xMax: 10, yMin: 0, yMax: 100 };
+            // Symmetric cloud around center for r ≈ 0
+            this.points = [
+              { x: 1.5, y: 25 }, { x: 1.5, y: 75 },
+              { x: 3.0, y: 82 }, { x: 3.2, y: 22 },
+              { x: 4.8, y: 50 }, { x: 5.0, y: 88 },
+              { x: 5.2, y: 14 }, { x: 6.8, y: 24 },
+              { x: 7.0, y: 78 }, { x: 8.5, y: 72 },
+              { x: 8.5, y: 28 }, { x: 4.0, y: 45 },
+              { x: 6.0, y: 56 }
+            ];
+          } else if (type === 'clear') {
+            this.bounds = { xMin: 0, xMax: 10, yMin: 0, yMax: 100 };
+            this.points = [];
+          }
+
+          this.recompute();
+          this.syncManualSlidersToDataset(true);
+          this.render();
+        },
+
+        syncManualSlidersToDataset(applyOffset = false) {
+          const manSlope = document.getElementById('ols-man-slope');
+          const manInt = document.getElementById('ols-man-intercept');
+          const dx = this.bounds.xMax - this.bounds.xMin;
+          const dy = this.bounds.yMax - this.bounds.yMin;
+          const naturalSlope = dy / dx;
+
+          const sMin = -(naturalSlope * 2.5);
+          const sMax = naturalSlope * 2.5;
+          manSlope.min = sMin.toFixed(2);
+          manSlope.max = sMax.toFixed(2);
+          manSlope.step = (naturalSlope / 120).toFixed(3);
+
+          const midX = (this.bounds.xMin + this.bounds.xMax) / 2;
+          const midY = (this.bounds.yMin + this.bounds.yMax) / 2;
+          const iRange = Math.max(dy * 2, Math.abs(midX * naturalSlope) * 2.5);
+          manInt.min = (midY - iRange).toFixed(1);
+          manInt.max = (midY + iRange).toFixed(1);
+          manInt.step = (dy / 160).toFixed(2);
+
+          if (applyOffset) {
+            if (this.stats && this.stats.validLine) {
+              // Start slightly offset from OLS so user can experiment trying to beat OLS
+              this.manualSlope = this.stats.a1 * 0.72 + (Math.abs(this.stats.a1) < 0.2 ? naturalSlope * 0.25 : 0);
+              this.manualIntercept = this.stats.yMean - this.manualSlope * this.stats.xMean + dy * 0.05;
+            } else {
+              this.manualSlope = 0;
+              this.manualIntercept = midY;
+            }
+            manSlope.value = String(this.manualSlope);
+            manInt.value = String(this.manualIntercept);
+          }
+          this.updateManualReadouts();
+        },
+
+        updateManualReadouts() {
+          document.getElementById('ols-man-slope-val').textContent = this.manualSlope.toFixed(2);
+          document.getElementById('ols-man-intercept-val').textContent = this.manualIntercept.toFixed(2);
+
+          const phiEl = document.getElementById('ols-man-phi');
+          const diffEl = document.getElementById('ols-man-diff');
+
+          if (this.points.length === 0) {
+            phiEl.textContent = '—';
+            diffEl.textContent = 'Додайте точки';
+            return;
+          }
+
+          let phiMan = 0;
+          for (const pt of this.points) {
+            const err = pt.y - (this.manualSlope * pt.x + this.manualIntercept);
+            phiMan += err * err;
+          }
+          phiEl.textContent = `Φ_ручна = ${phiMan.toFixed(2)}`;
+
+          if (this.stats && this.stats.validLine) {
+            const delta = Math.max(0, phiMan - this.stats.phiMin);
+            const pct = this.stats.phiMin > 1e-9 ? (delta / this.stats.phiMin) * 100 : 0;
+            if (delta < 0.01) {
+              diffEl.textContent = 'Збігається з оптимумом МНК!';
+              diffEl.style.color = '#34d399';
+            } else {
+              diffEl.textContent = `+${delta.toFixed(2)} гірше за МНК (+${pct.toFixed(1)}%)`;
+              diffEl.style.color = '#fcd34d';
+            }
+          } else {
+            diffEl.textContent = 'Потрібно ≥ 2 різних X';
+          }
+        },
+
+        /* Coordinate conversions */
+        toPx(x, y) {
+          const pw = this.w - this.pad.l - this.pad.r;
+          const ph = this.h - this.pad.t - this.pad.b;
+          const px = this.pad.l + ((x - this.bounds.xMin) / (this.bounds.xMax - this.bounds.xMin)) * pw;
+          const py = this.pad.t + (1 - (y - this.bounds.yMin) / (this.bounds.yMax - this.bounds.yMin)) * ph;
+          return { px, py };
+        },
+
+        toData(px, py) {
+          const pw = this.w - this.pad.l - this.pad.r;
+          const ph = this.h - this.pad.t - this.pad.b;
+          const x = this.bounds.xMin + ((px - this.pad.l) / pw) * (this.bounds.xMax - this.bounds.xMin);
+          const y = this.bounds.yMin + (1 - (py - this.pad.t) / ph) * (this.bounds.yMax - this.bounds.yMin);
+          return { x, y };
+        },
+
+        findPointNear(px, py, radius = 13) {
+          let bestIdx = -1;
+          let bestDist = radius;
+          for (let i = 0; i < this.points.length; i++) {
+            const p = this.toPx(this.points[i].x, this.points[i].y);
+            const d = Math.hypot(px - p.px, py - p.py);
+            if (d < bestDist) {
+              bestDist = d;
+              bestIdx = i;
+            }
+          }
+          return bestIdx;
+        },
+
+        getCanvasCoords(evt) {
+          const rect = this.canvas.getBoundingClientRect();
+          const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+          const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+          return {
+            px: clientX - rect.left,
+            py: clientY - rect.top
+          };
+        },
+
+        bindPointerEvents() {
+          const cv = this.canvas;
+
+          // Right-click to delete point
+          cv.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const { px, py } = this.getCanvasCoords(e);
+            const idx = this.findPointNear(px, py, 14);
+            if (idx !== -1) {
+              this.points.splice(idx, 1);
+              this.hoverIndex = -1;
+              this.recompute();
+              this.render();
+            }
+          });
+
+          const onDown = (e) => {
+            if (e.button === 2) return; // Handled by contextmenu
+            const { px, py } = this.getCanvasCoords(e);
+            const idx = this.findPointNear(px, py, e.touches ? 20 : 13);
+
+            const now = performance.now();
+            if (idx !== -1) {
+              // Double-click / double-tap deletes point
+              if (idx === this.lastClickIdx && now - this.lastClickTime < 320) {
+                this.points.splice(idx, 1);
+                this.dragIndex = -1;
+                this.hoverIndex = -1;
+                this.lastClickIdx = -1;
+                this.recompute();
+                this.render();
+                return;
+              }
+              this.lastClickIdx = idx;
+              this.lastClickTime = now;
+              this.dragIndex = idx;
+              cv.style.cursor = 'grabbing';
+              if (e.cancelable) e.preventDefault();
+            } else {
+              // Add new point if inside plot area
+              if (px >= this.pad.l && px <= this.w - this.pad.r && py >= this.pad.t && py <= this.h - this.pad.b) {
+                const d = this.toData(px, py);
+                this.points.push({ x: d.x, y: d.y });
+                this.dragIndex = this.points.length - 1;
+                this.lastClickIdx = -1;
+                this.recompute();
+                this.render();
+                if (e.cancelable) e.preventDefault();
+              }
+            }
+          };
+
+          const onMove = (e) => {
+            const { px, py } = this.getCanvasCoords(e);
+            const data = this.toData(px, py);
+
+            if (px >= this.pad.l && px <= this.w - this.pad.r && py >= this.pad.t && py <= this.h - this.pad.b) {
+              document.getElementById('ols-cursor-coords').textContent = `x: ${data.x.toFixed(2)} , y: ${data.y.toFixed(1)}`;
+            }
+
+            if (this.dragIndex !== -1) {
+              const clampedX = Math.max(this.bounds.xMin, Math.min(this.bounds.xMax, data.x));
+              const clampedY = Math.max(this.bounds.yMin, Math.min(this.bounds.yMax, data.y));
+              this.points[this.dragIndex].x = clampedX;
+              this.points[this.dragIndex].y = clampedY;
+              this.recompute();
+              this.render();
+              if (e.cancelable) e.preventDefault();
+            } else if (!e.touches) {
+              const hit = this.findPointNear(px, py, 13);
+              if (hit !== this.hoverIndex) {
+                this.hoverIndex = hit;
+                cv.style.cursor = hit !== -1 ? 'grab' : 'crosshair';
+                this.render();
+              }
+            }
+          };
+
+          const onUp = () => {
+            if (this.dragIndex !== -1) {
+              this.dragIndex = -1;
+              cv.style.cursor = this.hoverIndex !== -1 ? 'grab' : 'crosshair';
+              this.render();
+            }
+          };
+
+          cv.addEventListener('mousedown', onDown);
+          window.addEventListener('mousemove', onMove);
+          window.addEventListener('mouseup', onUp);
+
+          cv.addEventListener('touchstart', onDown, { passive: false });
+          cv.addEventListener('touchmove', onMove, { passive: false });
+          window.addEventListener('touchend', onUp);
+        },
+
+        recompute() {
+          const n = this.points.length;
+          document.getElementById('ols-n-badge').textContent = `n = ${n}`;
+
+          if (n === 0) {
+            this.stats = null;
+            this.renderAnalytics();
+            return;
+          }
+
+          let sumX = 0, sumY = 0, sumX2 = 0, sumY2 = 0, sumXY = 0;
+          for (const pt of this.points) {
+            sumX += pt.x;
+            sumY += pt.y;
+            sumX2 += pt.x * pt.x;
+            sumY2 += pt.y * pt.y;
+            sumXY += pt.x * pt.y;
+          }
+
+          const xMean = sumX / n;
+          const yMean = sumY / n;
+          const sx2 = Math.max(0, sumX2 / n - xMean * xMean);
+          const sy2 = Math.max(0, sumY2 / n - yMean * yMean);
+          const sx = Math.sqrt(sx2);
+          const sy = Math.sqrt(sy2);
+
+          const sxx = n * sx2; // sum (x_i - xMean)^2
+          const sxy = sumXY - n * xMean * yMean;
+          const delta = n * sumX2 - sumX * sumX;
+
+          let validLine = n >= 2 && sxx > 1e-12 && delta > 1e-12;
+          let a1 = NaN, a0 = NaN, r = NaN, r2 = NaN, phiMin = NaN;
+          let sigma2 = NaN, sigmaA0 = NaN, sigmaA1 = NaN, tCrit = NaN;
+          let ciA0 = null, ciA1 = null;
+
+          if (validLine) {
+            a1 = sxy / sxx;
+            a0 = yMean - a1 * xMean;
+
+            if (sx > 1e-12 && sy > 1e-12) {
+              r = Math.max(-1, Math.min(1, sxy / (n * sx * sy)));
+              r2 = r * r;
+            } else {
+              r = 0;
+              r2 = 0;
+            }
+
+            phiMin = 0;
+            for (const pt of this.points) {
+              const err = pt.y - (a1 * pt.x + a0);
+              phiMin += err * err;
+            }
+
+            if (n > 2) {
+              sigma2 = phiMin / (n - 2);
+              const varA0 = (sumX2 / delta) * sigma2;
+              const varA1 = (n / delta) * sigma2;
+              sigmaA0 = Math.sqrt(Math.max(0, varA0));
+              sigmaA1 = Math.sqrt(Math.max(0, varA1));
+              tCrit = MathUtils.studentT95(n - 2);
+              ciA0 = [a0 - tCrit * sigmaA0, a0 + tCrit * sigmaA0];
+              ciA1 = [a1 - tCrit * sigmaA1, a1 + tCrit * sigmaA1];
+            }
+          }
+
+          this.stats = {
+            n, xMean, yMean, sx2, sy2, validLine,
+            a1, a0, r, r2, phiMin, sigma2, tCrit, ciA0, ciA1
+          };
+
+          this.renderAnalytics();
+          if (this.showManual) {
+            this.updateManualReadouts();
+          }
+        },
+
+        renderAnalytics() {
+          const s = this.stats;
+          const eqEl = document.getElementById('ols-eq');
+          const corrBadge = document.getElementById('ols-corr-badge');
+
+          if (!s) {
+            eqEl.textContent = 'Додайте принаймні 2 точки на площину';
+            corrBadge.className = 'badge badge-indigo';
+            corrBadge.textContent = 'Недостатньо даних для кореляції';
+            ['ols-r', 'ols-r2', 'ols-phi', 'ols-sigma2', 'ols-means', 'ols-vars', 'ols-tcrit', 'ols-ci-a1', 'ols-ci-a0']
+              .forEach(id => document.getElementById(id).textContent = '—');
+            return;
+          }
+
+          document.getElementById('ols-means').textContent = `${s.xMean.toFixed(3)} , ${s.yMean.toFixed(2)}`;
+          document.getElementById('ols-vars').textContent = `${s.sx2.toFixed(4)} , ${s.sy2.toFixed(2)}`;
+
+          if (!s.validLine) {
+            eqEl.textContent = 'Потрібно ≥ 2 точки з різними координатами X';
+            corrBadge.className = 'badge badge-amber';
+            corrBadge.textContent = 'Неможливо побудувати пряму (дисперсія X = 0)';
+            ['ols-r', 'ols-r2', 'ols-phi', 'ols-sigma2', 'ols-tcrit', 'ols-ci-a1', 'ols-ci-a0']
+              .forEach(id => document.getElementById(id).textContent = '—');
+            return;
+          }
+
+          const sign = s.a0 >= 0 ? '+' : '−';
+          eqEl.textContent = `ŷ = ${s.a1.toFixed(4)}·x ${sign} ${Math.abs(s.a0).toFixed(4)}`;
+
+          document.getElementById('ols-r').textContent = s.r.toFixed(4);
+          document.getElementById('ols-r2').textContent = `${s.r2.toFixed(4)} (${(s.r2 * 100).toFixed(1)}%)`;
+          document.getElementById('ols-phi').textContent = s.phiMin.toFixed(3);
+
+          // Correlation strength classification
+          const absR = Math.abs(s.r);
+          const dir = s.r >= 0 ? 'прямий' : 'обернений';
+          if (absR >= 0.7) {
+            corrBadge.className = s.r >= 0 ? 'badge badge-emerald' : 'badge badge-rose';
+            corrBadge.textContent = `Сильний ${dir} лінійний зв'язок (|r| = ${absR.toFixed(3)})`;
+          } else if (absR >= 0.35) {
+            corrBadge.className = 'badge badge-cyan';
+            corrBadge.textContent = `Помірний ${dir} лінійний зв'язок (|r| = ${absR.toFixed(3)})`;
+          } else {
+            corrBadge.className = 'badge badge-amber';
+            corrBadge.textContent = `Слабкий або відсутній лінійний зв'язок (|r| = ${absR.toFixed(3)})`;
+          }
+
+          if (s.n > 2 && Number.isFinite(s.sigma2)) {
+            document.getElementById('ols-sigma2').textContent = s.sigma2.toFixed(3);
+            document.getElementById('ols-tcrit').textContent = `${s.tCrit.toFixed(4)} (df=${s.n - 2})`;
+            document.getElementById('ols-ci-a1').textContent = `(${s.ciA1[0].toFixed(2)} ; ${s.ciA1[1].toFixed(2)})`;
+            document.getElementById('ols-ci-a0').textContent = `(${s.ciA0[0].toFixed(2)} ; ${s.ciA0[1].toFixed(2)})`;
+          } else {
+            document.getElementById('ols-sigma2').textContent = 'n ≥ 3';
+            document.getElementById('ols-tcrit').textContent = 'n ≥ 3';
+            document.getElementById('ols-ci-a1').textContent = 'Потрібно n ≥ 3';
+            document.getElementById('ols-ci-a0').textContent = 'Потрібно n ≥ 3';
+          }
+        },
+
+        resize() {
+          const res = resizeCanvasHiDPI(this.canvas);
+          this.ctx = res.ctx;
+          this.w = res.w;
+          this.h = res.h;
+          this.render();
+        },
+
+        render() {
+          if (!this.ctx) return;
+          const ctx = this.ctx;
+          const w = this.w;
+          const h = this.h;
+          const { l, r, t, b } = this.pad;
+          const pw = w - l - r;
+          const ph = h - t - b;
+
+          ctx.fillStyle = '#080e1c';
+          ctx.fillRect(0, 0, w, h);
+
+          // Grid & Ticks
+          const xSteps = 7;
+          const ySteps = 6;
+          ctx.save();
+          ctx.font = '11px "SFMono-Regular", Consolas, monospace';
+
+          for (let i = 0; i <= xSteps; i++) {
+            const frac = i / xSteps;
+            const xVal = this.bounds.xMin + frac * (this.bounds.xMax - this.bounds.xMin);
+            const px = l + frac * pw;
+
+            ctx.strokeStyle = i === 0 ? 'rgba(148, 163, 184, 0.4)' : 'rgba(148, 163, 184, 0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(px, t);
+            ctx.lineTo(px, t + ph);
+            ctx.stroke();
+
+            ctx.fillStyle = '#64748b';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(xVal.toFixed(this.bounds.xMax - this.bounds.xMin < 3 ? 2 : 1), px, t + ph + 8);
+          }
+
+          for (let i = 0; i <= ySteps; i++) {
+            const frac = i / ySteps;
+            const yVal = this.bounds.yMin + frac * (this.bounds.yMax - this.bounds.yMin);
+            const py = t + (1 - frac) * ph;
+
+            ctx.strokeStyle = i === 0 ? 'rgba(148, 163, 184, 0.4)' : 'rgba(148, 163, 184, 0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(l, py);
+            ctx.lineTo(l + pw, py);
+            ctx.stroke();
+
+            ctx.fillStyle = '#64748b';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(yVal.toFixed(0), l - 8, py);
+          }
+
+          // Axis captions
+          ctx.fillStyle = '#94a3b8';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
+          ctx.fillText('Ознака X', l + pw / 2, t + ph + 23);
+
+          ctx.save();
+          ctx.translate(14, t + ph / 2);
+          ctx.rotate(-Math.PI / 2);
+          ctx.fillText('Ознака Y', 0, 0);
+          ctx.restore();
+          ctx.restore();
+
+          // Clip drawing inside plot frame
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(l, t, pw, ph);
+          ctx.clip();
+
+          // 1. Draw Manual Trial Line (if enabled)
+          if (this.showManual) {
+            const y1 = this.manualSlope * this.bounds.xMin + this.manualIntercept;
+            const y2 = this.manualSlope * this.bounds.xMax + this.manualIntercept;
+            const p1 = this.toPx(this.bounds.xMin, y1);
+            const p2 = this.toPx(this.bounds.xMax, y2);
+
+            // Manual residual dashes
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
+            ctx.lineWidth = 1.2;
+            ctx.setLineDash([3, 3]);
+            for (const pt of this.points) {
+              const pDot = this.toPx(pt.x, pt.y);
+              const pLine = this.toPx(pt.x, this.manualSlope * pt.x + this.manualIntercept);
+              ctx.beginPath();
+              ctx.moveTo(pDot.px, pDot.py);
+              ctx.lineTo(pLine.px, pLine.py);
+              ctx.stroke();
+            }
+
+            // Manual line itself
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2.2;
+            ctx.setLineDash([8, 5]);
+            ctx.beginPath();
+            ctx.moveTo(p1.px, p1.py);
+            ctx.lineTo(p2.px, p2.py);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+
+          // 2. Draw OLS Residual Squares & Regression Line
+          if (this.stats && this.stats.validLine) {
+            const { a1, a0, xMean, yMean } = this.stats;
+
+            if (this.showSquares) {
+              for (const pt of this.points) {
+                const yHat = a1 * pt.x + a0;
+                const pDot = this.toPx(pt.x, pt.y);
+                const pHat = this.toPx(pt.x, yHat);
+                const sidePx = Math.abs(pDot.py - pHat.py);
+                const topY = Math.min(pDot.py, pHat.py);
+
+                // Place square to the right unless it clips near right edge
+                const sqX = (pDot.px + sidePx > l + pw) ? (pDot.px - sidePx) : pDot.px;
+
+                ctx.fillStyle = 'rgba(244, 63, 94, 0.14)';
+                ctx.fillRect(sqX, topY, sidePx, sidePx);
+                ctx.strokeStyle = 'rgba(244, 63, 94, 0.42)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(sqX, topY, sidePx, sidePx);
+
+                // Dashed vertical residual segment
+                ctx.strokeStyle = 'rgba(244, 63, 94, 0.85)';
+                ctx.lineWidth = 1.4;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(pDot.px, pDot.py);
+                ctx.lineTo(pHat.px, pHat.py);
+                ctx.stroke();
+                ctx.setLineDash([]);
+              }
+            }
+
+            // OLS Regression Line
+            const y1 = a1 * this.bounds.xMin + a0;
+            const y2 = a1 * this.bounds.xMax + a0;
+            const p1 = this.toPx(this.bounds.xMin, y1);
+            const p2 = this.toPx(this.bounds.xMax, y2);
+
+            ctx.save();
+            ctx.strokeStyle = '#22d3ee';
+            ctx.lineWidth = 2.8;
+            ctx.shadowColor = 'rgba(34, 211, 238, 0.55)';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.moveTo(p1.px, p1.py);
+            ctx.lineTo(p2.px, p2.py);
+            ctx.stroke();
+            ctx.restore();
+
+            // Centroid marker (x̄, ȳ) — OLS line always passes through it!
+            const cPos = this.toPx(xMean, yMean);
+            ctx.save();
+            ctx.strokeStyle = 'rgba(129, 140, 248, 0.85)';
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(cPos.px - 7, cPos.py); ctx.lineTo(cPos.px + 7, cPos.py);
+            ctx.moveTo(cPos.px, cPos.py - 7); ctx.lineTo(cPos.px, cPos.py + 7);
+            ctx.stroke();
+            ctx.fillStyle = '#a5b4fc';
+            ctx.font = 'bold 10.5px "SFMono-Regular", Consolas, monospace';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText('(x̄, ȳ)', cPos.px + 7, cPos.py - 5);
+            ctx.restore();
+          }
+
+          // 3. Draw Data Points
+          for (let i = 0; i < this.points.length; i++) {
+            const pt = this.points[i];
+            const pos = this.toPx(pt.x, pt.y);
+            const isActive = i === this.dragIndex || i === this.hoverIndex;
+
+            if (isActive) {
+              ctx.beginPath();
+              ctx.arc(pos.px, pos.py, 12, 0, Math.PI * 2);
+              ctx.fillStyle = 'rgba(34, 211, 238, 0.22)';
+              ctx.fill();
+            }
+
+            ctx.beginPath();
+            ctx.arc(pos.px, pos.py, isActive ? 7 : 5.5, 0, Math.PI * 2);
+            ctx.fillStyle = isActive ? '#67e8f9' : '#f8fafc';
+            ctx.fill();
+            ctx.lineWidth = 2.2;
+            ctx.strokeStyle = isActive ? '#22d3ee' : '#6366f1';
+            ctx.stroke();
+
+            if (isActive) {
+              const lbl = `(${pt.x.toFixed(2)}, ${pt.y.toFixed(1)})`;
+              ctx.font = 'bold 11px "SFMono-Regular", Consolas, monospace';
+              const tw = ctx.measureText(lbl).width + 10;
+              let lx = pos.px + 10;
+              let ly = pos.py - 22;
+              if (lx + tw > l + pw) lx = pos.px - tw - 10;
+              if (ly < t + 4) ly = pos.py + 12;
+              ctx.fillStyle = 'rgba(6, 10, 20, 0.9)';
+              ctx.strokeStyle = '#22d3ee';
+              ctx.lineWidth = 1;
+              ctx.fillRect(lx, ly, tw, 18);
+              ctx.strokeRect(lx, ly, tw, 18);
+              ctx.fillStyle = '#f1f5f9';
+              ctx.textAlign = 'left';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(lbl, lx + 5, ly + 9);
+            }
+          }
+
+          ctx.restore();
+        }
+      };
+
+      /* ===================================================================
+         6. MAIN APP CONTROLLER (TABS, LOOP, RESIZE, EXPORT)
+         =================================================================== */
+      const App = {
+        activeTab: 'galton',
+        lastFrameTime: 0,
+
+        init() {
+          GaltonModule.init();
+          MeetingModule.init();
+          OLSModule.init();
+
+          this.bindTabs();
+          this.bindExport();
+
+          window.addEventListener('resize', () => this.resizeActive());
+          this.resizeActive();
+
+          this.lastFrameTime = performance.now();
+          requestAnimationFrame((ts) => this.loop(ts));
+        },
+
+        bindTabs() {
+          const buttons = document.querySelectorAll('.tab-btn');
+          buttons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const tabId = btn.dataset.tab;
+              if (tabId === this.activeTab) return;
+
+              this.activeTab = tabId;
+              buttons.forEach((b) => {
+                const isAct = b.dataset.tab === tabId;
+                b.classList.toggle('active', isAct);
+                b.setAttribute('aria-selected', String(isAct));
+              });
+
+              document.querySelectorAll('.module-section').forEach((sec) => {
+                sec.classList.toggle('active', sec.id === 'tab-' + tabId);
+              });
+
+              // Re-measure canvases now that the selected panel is visible
+              requestAnimationFrame(() => this.resizeActive());
+            });
+          });
+        },
+
+        resizeActive() {
+          if (this.activeTab === 'galton') GaltonModule.resize();
+          else if (this.activeTab === 'meeting') MeetingModule.resize();
+          else if (this.activeTab === 'ols') OLSModule.resize();
+        },
+
+        loop(ts) {
+          const dt = Math.min(0.05, Math.max(0.001, (ts - this.lastFrameTime) / 1000));
+          this.lastFrameTime = ts;
+
+          if (this.activeTab === 'galton') {
+            GaltonModule.update(dt);
+          } else if (this.activeTab === 'meeting') {
+            MeetingModule.update(dt);
+          }
+
+          requestAnimationFrame((nextTs) => this.loop(nextTs));
+        },
+
+        /**
+         * Export complete standalone HTML file cleanly for submission to the lecturer.
+         */
+        bindExport() {
+          document.getElementById('btn-export-html').addEventListener('click', () => {
+            try {
+              const clone = document.documentElement.cloneNode(true);
+              // Reset tab state in exported snapshot so file opens cleanly on Module 1
+              clone.querySelectorAll('.tab-btn').forEach((b) => {
+                const isFirst = b.dataset.tab === 'galton';
+                b.classList.toggle('active', isFirst);
+                b.setAttribute('aria-selected', String(isFirst));
+              });
+              clone.querySelectorAll('.module-section').forEach((sec) => {
+                sec.classList.toggle('active', sec.id === 'tab-galton');
+              });
+              const toastClone = clone.querySelector('#toast');
+              if (toastClone) {
+                toastClone.classList.remove('show');
+                toastClone.textContent = '';
+              }
+
+              const htmlString = '<!DOCTYPE html>\n' + clone.outerHTML;
+              const blob = new Blob([htmlString], { type: 'text/html;charset=utf-8' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = 'probability_statistics_lab.html';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+              showToast('Файл probability_statistics_lab.html успішно завантажено!');
+            } catch (err) {
+              showToast('Не вдалося виконати експорт: ' + err.message);
+            }
+          });
+        }
+      };
+
+      window.addEventListener('DOMContentLoaded', () => App.init());
+    })();
+  </script>
+
+</body></html>
